@@ -1,0 +1,193 @@
+.hist-container {
+  min-height: 100vh;
+  background: #f4f6fa;
+  display: flex;
+  flex-direction: column;
+}
+
+.hist-navbar {
+  padding-top: max(50px, calc(env(safe-area-inset-top) + 16px));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #082F5C;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 12px;
+  color: white;
+  flex-wrap: wrap;
+}
+
+.hist-nav-logo {
+  height: 24px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  margin-right: auto;
+  cursor: pointer;
+}
+
+.hist-back, .hist-logout {
+  background: rgba(255,255,255,0.12);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.hist-user {
+  font-size: 0.82rem;
+  opacity: 0.85;
+}
+
+.hist-main {
+  flex: 1;
+  padding: 20px 16px 40px;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.hist-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.hist-title-row h1 {
+  font-size: 1.3rem;
+  color: #082F5C;
+  margin: 0;
+}
+
+.hist-export {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 9px 14px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hist-filtros {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.hist-filtros input {
+  flex: 1;
+  min-width: 180px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.hist-filtros select {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  background: white;
+}
+
+.hist-hint {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.hist-error-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: #FFEBEE;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.hist-error {
+  color: #C62828;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.hist-retry {
+  background: #0D4C92;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hist-card {
+  background: white;
+  border-radius: 10px;
+  padding: 14px 16px;
+  border-left: 4px solid #4CAF50;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.hist-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.hist-cliente {
+  font-weight: 600;
+  color: #082F5C;
+  font-size: 0.95rem;
+}
+
+.hist-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+.hist-badge-completo {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.hist-badge-borrador {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+.hist-card-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: #888;
+}

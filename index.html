@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0D4C92" />
+    <meta name="description" content="App para levantamientos técnicos de bandas transportadoras y de transmisión" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="PROVAC Técnico" />
+    
+    <!-- PWA Icons para iOS -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <!-- Manifest para Android/Web -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/icon-192.png" />
+    
+    <title>PROVAC - Levantamiento Técnico</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Registrar Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(reg => {
+              console.log('✅ Service Worker registrado:', reg);
+              
+              // Escuchar actualizaciones
+              reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('🔄 Nueva versión disponible');
+                    // Aquí puedes mostrar notificación al usuario
+                  }
+                });
+              });
+            })
+            .catch(err => console.error('❌ Error registrando Service Worker:', err));
+        });
+      }
+    </script>
+  </body>
+</html>
