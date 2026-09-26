@@ -3,6 +3,7 @@ import { API_URL } from '../config';
 import SignaturePad from '../components/SignaturePad';
 import './BandaTransporteForm.css';
 import { TIPOS_BANDA, CAMPOS_CLIENTE } from '../constants/bandas';
+import { enviarOEncolar } from '../utils/offlineSubmit';
 
 const TOTAL_PASOS = 11;
 const TITULOS = [
@@ -274,21 +275,37 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
       const url = esEdicion ? `${API_URL}/levantamientos/${existente.id}` : `${API_URL}/levantamientos`;
       const method = esEdicion ? 'PUT' : 'POST';
 
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(buildPayload(estado)),
+      const envio = await enviarOEncolar({
+        url, method, token,
+        payload: buildPayload(estado),
+        descripcion: `Transmisión - ${data.empresa || 'Sin nombre'}`,
+        tipoBanda: 'transmision'
       });
-      const result = await response.json();
 
-      if (!response.ok) {
-        setError(result.error || 'Error al guardar');
+      if (!envio.offline && !envio.ok) {
+        setError(envio.result.error || 'Error al guardar');
         setLoading(false);
         return;
       }
+
+      if (envio.offline) {
+        setSuccess('📴 Sin conexión: guardado en este dispositivo. Se subirá automáticamente al recuperar señal.');
+        setLoading(false);
+        if (estado === 'completo' && !esEdicion) {
+          if (multiBanda && multiBanda.pendientes && multiBanda.pendientes.length > 0 && onSesionTerminada) {
+            setTimeout(() => { onSesionTerminada(); }, 1200);
+          } else {
+            setTimeout(() => {
+              setData(initialData);
+              setStep(1);
+              setSuccess('');
+            }, 2200);
+          }
+        }
+        return;
+      }
+
+      const result = envio.result;
 
       if (estado === 'completo' && multiBanda && multiBanda.pendientes && multiBanda.pendientes.length > 0) {
         await Promise.all(multiBanda.pendientes.map(async (p) => {

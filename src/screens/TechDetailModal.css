@@ -64,6 +64,17 @@
 
 .tdm-badge-completo { background: #E8F5E9; color: #2E7D32; }
 .tdm-badge-borrador { background: #FFF3E0; color: #E65100; }
+.tdm-badge-pendiente { background: #FFF3E0; color: #E65100; }
+
+.tdm-hint-pendiente {
+  background: #FFF3E0;
+  color: #E65100;
+  border: 1px solid #E65100;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  margin: 0 0 12px 0;
+}
 
 .tdm-actions {
   display: flex;

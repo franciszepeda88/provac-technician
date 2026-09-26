@@ -6,6 +6,7 @@ import BandaTransporteForm from './forms/BandaTransporteForm';
 import BandaTransmisionForm from './forms/BandaTransmisionForm';
 import BandaModularForm from './forms/BandaModularForm';
 import BandaThermodriveForm from './forms/BandaThermodriveForm';
+import { sincronizarPendientes } from './utils/offlineQueue';
 import './App.css';
 
 function App() {
@@ -28,6 +29,27 @@ function App() {
       setUsuario(JSON.parse(savedUsuario));
     }
   }, []);
+
+  // Sincronización de levantamientos guardados sin conexión: se intenta al
+  // recuperar señal, y además cada cierto tiempo (por si el navegador no
+  // avisa "online" de forma confiable en datos móviles). Corre en segundo
+  // plano en toda la app, no solo dentro de la pantalla de Historial, para
+  // no depender de que el técnico la abra.
+  useEffect(() => {
+    if (!usuario) return;
+    const intentarSincronizar = () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      sincronizarPendientes(token).catch(() => {});
+    };
+    intentarSincronizar();
+    window.addEventListener('online', intentarSincronizar);
+    const intervalo = setInterval(intentarSincronizar, 60000);
+    return () => {
+      window.removeEventListener('online', intentarSincronizar);
+      clearInterval(intervalo);
+    };
+  }, [usuario]);
 
   const handleLoginSuccess = (usuarioData) => {
     setUsuario(usuarioData);

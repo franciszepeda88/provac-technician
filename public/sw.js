@@ -1,4 +1,4 @@
-const CACHE_NAME = 'provac-technician-v15';
+const CACHE_NAME = 'provac-technician-v17';
 const STATIC_ASSETS = [
   '/manifest.json',
   '/icon-192.png',
@@ -33,16 +33,20 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Solo cachear assets estáticos exactos (manifest, iconos).
-  // Todo lo demás (HTML, JS, CSS, API) va directo a la red:
-  // esto evita servir versiones viejas mientras desarrollamos.
-  const esAssetEstatico = STATIC_ASSETS.some(asset => url.pathname === asset);
-
-  if (!esAssetEstatico) {
+  // Las llamadas al backend (otro origen: host/puerto del API) nunca se
+  // cachean, van directo a la red tal cual. Si fallan por falta de
+  // conexión, cada formulario decide qué hacer (guardarlas en la cola
+  // local de IndexedDB para sincronizar después).
+  const esMismoOrigen = url.origin === self.location.origin;
+  if (!esMismoOrigen || request.method !== 'GET') {
     event.respondWith(fetch(request));
     return;
   }
 
+  // App (HTML, JS, CSS, assets) y estáticos del mismo origen: se intenta
+  // la red primero y, si no hay conexión, se sirve la última copia en
+  // caché. Así la app abre aunque el técnico esté sin señal, y siempre
+  // se actualiza sola apenas hay conexión (por eso se prueba la red primero).
   event.respondWith(
     fetch(request)
       .then(response => {

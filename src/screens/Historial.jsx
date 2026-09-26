@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { API_URL } from '../config';
 import TechDetailModal from './TechDetailModal';
 import { TIPO_LABELS, exportListToExcel } from '../utils/exportUtils';
+import { listarPendientes, sincronizarPendientes } from '../utils/offlineQueue';
 import './Historial.css';
 
 export default function Historial({ usuario, onBack, onLogout, onEditar, onIrInicio }) {
@@ -14,9 +15,52 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const [pendientes, setPendientes] = useState([]);
+  const [sincronizando, setSincronizando] = useState(false);
+  const [mensajeSync, setMensajeSync] = useState('');
+
   useEffect(() => {
     cargar(1);
+    cargarPendientes();
+    const onOnline = () => sincronizar();
+    window.addEventListener('online', onOnline);
+    // Reintento periódico por si el navegador no avisa "online" de forma
+    // confiable (común en datos móviles con señal intermitente).
+    const intervalo = setInterval(() => sincronizar(), 45000);
+    return () => {
+      window.removeEventListener('online', onOnline);
+      clearInterval(intervalo);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const cargarPendientes = async () => {
+    try {
+      const lista = await listarPendientes();
+      setPendientes(lista);
+    } catch (err) { /* IndexedDB no disponible; se ignora */ }
+  };
+
+  const sincronizar = async () => {
+    setSincronizando(true);
+    setMensajeSync('');
+    try {
+      const token = localStorage.getItem('token');
+      const { subidos, fallidos, restantes } = await sincronizarPendientes(token);
+      await cargarPendientes();
+      if (subidos > 0) {
+        setMensajeSync(`✅ ${subidos} levantamiento(s) sincronizado(s)`);
+        cargar(1);
+      } else if (fallidos > 0) {
+        setMensajeSync('⚠️ Algunos levantamientos no se pudieron subir todavía');
+      } else if (restantes === 0) {
+        setMensajeSync('');
+      }
+    } catch (err) { /* sin conexión u otro problema; se reintentará después */ }
+    finally {
+      setSincronizando(false);
+    }
+  };
 
   const cargar = async (intento = 1) => {
     setError('');
@@ -68,6 +112,23 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
     return Array.from(mapa.values());
   }, [filtrados]);
 
+  // Convierte cada solicitud pendiente (guardada como method/url/body crudo)
+  // de vuelta a la forma de un levantamiento, para poder mostrarla en la
+  // lista y en el detalle exactamente igual que uno ya sincronizado.
+  const pendientesConvertidos = useMemo(() => {
+    return pendientes.map((p) => {
+      let payload = {};
+      try { payload = JSON.parse(p.body); } catch (e) { /* ignorar */ }
+      return {
+        ...payload,
+        id: `local-${p.id}`,
+        created_at: p.creado_en,
+        _esPendienteLocal: true,
+        _pendienteLocalId: p.id
+      };
+    });
+  }, [pendientes]);
+
   const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-HN', { day: '2-digit', month: 'short', year: 'numeric' });
 
   // La lista no trae fotos ni firmas (para que cargue rápido); se piden completas
@@ -114,6 +175,45 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
             </button>
           )}
         </div>
+
+        {pendientes.length > 0 && (
+          <div className="hist-pendientes-banner">
+            <span>⏳ {pendientes.length} levantamiento(s) pendiente(s) de sincronizar</span>
+            <button
+              type="button"
+              className="hist-btn-sincronizar"
+              onClick={sincronizar}
+              disabled={sincronizando}
+            >
+              {sincronizando ? 'Sincronizando...' : 'Sincronizar ahora'}
+            </button>
+          </div>
+        )}
+        {mensajeSync && <p className="hist-hint">{mensajeSync}</p>}
+
+        {pendientesConvertidos.length > 0 && (
+          <div className="hist-list hist-list-pendientes">
+            {pendientesConvertidos.map((lev) => (
+              <button key={lev.id} className="hist-card hist-card-pendiente" onClick={() => setSeleccionado(lev)}>
+                <div className="hist-card-top">
+                  <span className="hist-cliente">{lev.cliente_nombre || 'Sin nombre'}</span>
+                  <span className="hist-badge hist-badge-pendiente">⏳ Pendiente</span>
+                </div>
+                <div className="hist-card-meta">
+                  <span>{TIPO_LABELS[lev.tipo_banda] || lev.tipo_banda}</span>
+                  <span>·</span>
+                  <span>{formatearFecha(lev.created_at)}</span>
+                  {lev.folio && lev.folio !== 'AUTO' && (
+                    <>
+                      <span>·</span>
+                      <span>{lev.folio}</span>
+                    </>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="hist-filtros">
           <input
@@ -201,7 +301,7 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
         <TechDetailModal
           levantamiento={seleccionado}
           onClose={() => setSeleccionado(null)}
-          onEditar={(lev) => { setSeleccionado(null); onEditar(lev); }}
+          onEditar={seleccionado._esPendienteLocal ? undefined : (lev) => { setSeleccionado(null); onEditar(lev); }}
         />
       )}
     </div>

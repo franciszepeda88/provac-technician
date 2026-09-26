@@ -75,6 +75,39 @@
   cursor: pointer;
 }
 
+.hist-pendientes-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: #FFF3E0;
+  border: 1px solid #E65100;
+  color: #E65100;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.hist-btn-sincronizar {
+  background: #E65100;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.hist-btn-sincronizar:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .hist-filtros {
   display: flex;
   gap: 10px;
@@ -182,6 +215,23 @@
 .hist-badge-borrador {
   background: #FFF3E0;
   color: #E65100;
+}
+
+.hist-badge-pendiente {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+.hist-list-pendientes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.hist-card-pendiente {
+  border-left: 4px solid #E65100;
+  background: #FFFBF5;
 }
 
 .hist-card-meta {
