@@ -2,13 +2,14 @@ import { useState, useRef, useEffect } from 'react';
 import { API_URL } from '../config';
 import SignaturePad from '../components/SignaturePad';
 import './BandaTransporteForm.css';
+import { TIPOS_BANDA, CAMPOS_CLIENTE } from '../constants/bandas';
 
 const TOTAL_PASOS_FINAL = 11;
 const TITULOS = [
   'Datos del Cliente',
   'Tipo de Proceso / Equipo',
   'Especificación de Banda',
-  'Catarina / Rueda y Eje',
+  'Sprocket / Rueda y Eje',
   'Producto Transportado',
   'Configuración del Sistema',
   'Limpieza / Saneamiento',
@@ -38,29 +39,28 @@ const initialData = {
   // Paso 2 - Tipo de Proceso / Equipo
   tipo_proceso: [],
   tipo_proceso_otro: '',
-  fuente_calor: [],
   marca_modelo_horno: '',
   temp_max_operacion: '',
-  temp_prom_operacion: '',
   tiempo_residencia: '',
-  zonas_temperatura: '',
   // Paso 3 - Especificación de la Banda ThermoDrive
-  estilo_superficie: [],
-  estilo_superficie_otro: '',
-  color_material_superficial: '',
-  color_material_otro: '',
+  serie_intralox: '',
+  serie_intralox_otro: '',
+  estilo: '',
+  estilo_otro: '',
+  color_superficie: '',
+  material_banda: '',
+  material_banda_otro: '',
   ancho_banda: '',
   largo_centro_centro: '',
   espesor_total: '',
   paso_banda: '',
   certificaciones: [],
-  // Paso 4 - Catarina / Rueda de Tracción y Eje
-  diametro_paso_catarina: '',
+  // Paso 4 - Sprocket / Rueda de Tracción y Eje
+  diametro_ext_sprocket: '',
   no_dientes: '',
-  barreno_diametro_interior: '',
-  ancho_cara_catarina: '',
-  material_catarina: '',
-  material_catarina_otro: '',
+  diametro_int_sprocket: '',
+  material_sprocket: '',
+  material_sprocket_otro: '',
   material_eje: '',
   material_eje_otro: '',
   diametro_eje: '',
@@ -72,19 +72,19 @@ const initialData = {
   alto_producto: '',
   espaciado_productos: '',
   carga_total: '',
-  carga_individual: '',
   velocidad_banda: '',
-  produccion_requerida: '',
   caracteristicas_producto: [],
   caracteristicas_producto_otro: '',
   // Paso 6 - Configuración del Sistema
   configuracion_recorrido: [],
   angulo_inclinacion: '',
-  ubicacion_motriz: '',
   guardas_laterales: '',
   guardas_laterales_otro: '',
   altura_sidewall: '',
-  espaciado_tacos: '',
+  empujadores: '',
+  tipo_empujador: '',
+  altura_empujador: '',
+  ancho_empujador: '',
   sistema_retorno: '',
   sistema_retorno_otro: '',
   tensado: '',
@@ -93,8 +93,6 @@ const initialData = {
   metodo_limpieza: '',
   frecuencia_limpieza: '',
   quimicos_limpieza: '',
-  concentracion_quimica: '',
-  temp_medio_limpieza: '',
   tiempo_exposicion: '',
   // Paso 8 - Observaciones
   observaciones: '',
@@ -111,8 +109,11 @@ const initialData = {
   firma_cliente: ''
 };
 
-export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrInicio, existente }) {
+export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrInicio, existente, multiBanda, onAgregarBanda, onSesionTerminada }) {
   const construirDataInicial = () => {
+    if (multiBanda && !existente) {
+      return { ...initialData, ...multiBanda.cliente, folio: multiBanda.folio || initialData.folio };
+    }
     if (!existente) return initialData;
     const { cliente_nombre, ubicacion, folio, fotos, firma_tecnico, firma_cliente, datos } = existente;
     return {
@@ -127,14 +128,15 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
     };
   };
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(() => (multiBanda && !existente ? 2 : 1));
+  const [mostrarSelectorBanda, setMostrarSelectorBanda] = useState(false);
   const [data, setData] = useState(construirDataInicial);
 
   // Al abrir un levantamiento NUEVO (no edición), pide de inmediato el folio
   // correlativo real al backend, para no dejar el placeholder "AUTO" visible
   // mientras el técnico llena el formulario.
   useEffect(() => {
-    if (existente) return;
+    if (existente || multiBanda) return;
     const token = localStorage.getItem('token');
     const pedirFolio = (intento = 1) => {
       fetch(`${API_URL}/folio/siguiente`, {
@@ -205,6 +207,50 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
     };
   };
 
+  const handleAgregarOtraBanda = async (nuevoTipo) => {
+    setError('');
+    if (!data.empresa) {
+      setError('⚠️ Falta el nombre de la empresa/cliente (Paso 1)');
+      setStep(1);
+      return;
+    }
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const esEdicion = Boolean(existente && existente.id);
+      const url = esEdicion ? `${API_URL}/levantamientos/${existente.id}` : `${API_URL}/levantamientos`;
+      const method = esEdicion ? 'PUT' : 'POST';
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(buildPayload('borrador')),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        setError(result.error || 'Error al guardar la banda');
+        setLoading(false);
+        return;
+      }
+      const savedId = esEdicion ? existente.id : result.levantamiento.id;
+      setLoading(false);
+      setMostrarSelectorBanda(false);
+      if (onAgregarBanda) {
+        const cliente = {};
+        CAMPOS_CLIENTE.forEach((campo) => { cliente[campo] = data[campo]; });
+        onAgregarBanda({
+          folio: data.folio,
+          cliente,
+          pendienteId: savedId,
+          pendienteTipo: 'thermodrive',
+          nuevoTipo
+        });
+      }
+    } catch (err) {
+      setError('❌ Error de conexión: ' + err.message);
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (estado) => {
     setError('');
     setSuccess('');
@@ -238,15 +284,49 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
         return;
       }
 
+      if (estado === 'completo' && multiBanda && multiBanda.pendientes && multiBanda.pendientes.length > 0) {
+        await Promise.all(multiBanda.pendientes.map(async (p) => {
+          try {
+            const detalleRes = await fetch(`${API_URL}/levantamientos/${p.id}`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const detalle = await detalleRes.json();
+            const datosPrevios = (detalle && detalle.levantamiento && detalle.levantamiento.datos) || {};
+            await fetch(`${API_URL}/levantamientos/${p.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify({
+                estado: 'completo',
+                firma_tecnico: data.firma_tecnico,
+                firma_cliente: data.firma_cliente,
+                datos: {
+                  ...datosPrevios,
+                  tecnico_nombre: data.tecnico_nombre,
+                  tecnico_puesto: data.tecnico_puesto,
+                  fecha_firma: data.fecha_firma,
+                  salida: data.salida,
+                  cliente_nombre_firma: data.cliente_nombre_firma,
+                  cliente_puesto: data.cliente_puesto
+                }
+              })
+            });
+          } catch (e) { /* si una falla, seguimos con las demas */ }
+        }));
+      }
+
       setSuccess(estado === 'completo' ? '✅ Levantamiento guardado' : '💾 Borrador guardado');
       setLoading(false);
 
       if (estado === 'completo' && !esEdicion) {
-        setTimeout(() => {
-          setData(initialData);
-          setStep(1);
-          setSuccess('');
-        }, 1800);
+        if (multiBanda && multiBanda.pendientes && multiBanda.pendientes.length > 0 && onSesionTerminada) {
+          setTimeout(() => { onSesionTerminada(); }, 1200);
+        } else {
+          setTimeout(() => {
+            setData(initialData);
+            setStep(1);
+            setSuccess('');
+          }, 1800);
+        }
       }
     } catch (err) {
       setError('❌ Error de conexión: ' + err.message);
@@ -279,6 +359,9 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
 
       <div className="bt-progress-header">
         <div className="bt-tipo-banner">Banda ThermoDrive</div>
+        {multiBanda && (
+          <div className="bt-multibanda-banner">📎 Folio {multiBanda.folio} · {multiBanda.pendientes.length} banda(s) ya guardada(s) en este levantamiento</div>
+        )}
         <div className="bt-progress-label">
           Paso {step} de {TOTAL_PASOS_FINAL} · {TITULOS[step - 1]}
         </div>
@@ -406,41 +489,17 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
               </div>
 
               <div className="bt-field">
-                <label>Fuente de calor del horno</label>
-                <div className="bt-check-grid">
-                  {['Gas directo', 'Gas indirecto', 'Eléctrico', 'Vapor', 'Infrarrojo', 'No aplica'].map(op => (
-                    <label key={op} className="bt-check">
-                      <input type="checkbox" checked={data.fuente_calor.includes(op)} onChange={() => toggleCheck('fuente_calor', op)} />
-                      {op}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bt-field">
-                <label>Marca / modelo del horno o equipo</label>
+                <label>Marca / Modelo del equipo</label>
                 <input value={data.marca_modelo_horno} onChange={e => setField('marca_modelo_horno', e.target.value)} />
               </div>
 
-              <div className="bt-row">
-                <div className="bt-field">
-                  <label>Temperatura máxima de operación (°C)</label>
-                  <input type="number" value={data.temp_max_operacion} onChange={e => setField('temp_max_operacion', e.target.value)} />
-                </div>
-                <div className="bt-field">
-                  <label>Temperatura promedio de operación (°C)</label>
-                  <input type="number" value={data.temp_prom_operacion} onChange={e => setField('temp_prom_operacion', e.target.value)} />
-                </div>
+              <div className="bt-field">
+                <label>Temperatura máxima de operación (°C)</label>
+                <input type="number" value={data.temp_max_operacion} onChange={e => setField('temp_max_operacion', e.target.value)} />
               </div>
-              <div className="bt-row">
-                <div className="bt-field">
-                  <label>Tiempo de residencia en el horno (min)</label>
-                  <input type="number" value={data.tiempo_residencia} onChange={e => setField('tiempo_residencia', e.target.value)} />
-                </div>
-                <div className="bt-field">
-                  <label>Zonas de temperatura (No.)</label>
-                  <input type="number" value={data.zonas_temperatura} onChange={e => setField('zonas_temperatura', e.target.value)} />
-                </div>
+              <div className="bt-field">
+                <label>Tiempo de residencia en el equipo (min)</label>
+                <input type="number" value={data.tiempo_residencia} onChange={e => setField('tiempo_residencia', e.target.value)} />
               </div>
             </div>
           )}
@@ -449,33 +508,62 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
             <div className="bt-step">
               <h2>Especificación de la Banda ThermoDrive</h2>
 
+              <a
+                className="bt-link-externo"
+                href="https://www.intralox.com/belt-finder/thermodrive"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Identificar banda en el sitio oficial de Intralox ↗
+              </a>
+
               <div className="bt-field">
-                <label>Estilo de superficie</label>
-                <div className="bt-check-grid">
-                  {['Lisa', 'Perforada', 'Malla abierta', 'Antiadherente', 'Con paredes laterales (sidewall)', 'Con tacos (cleats)', 'Otro'].map(op => (
-                    <label key={op} className="bt-check">
-                      <input type="checkbox" checked={data.estilo_superficie.includes(op)} onChange={() => toggleCheck('estilo_superficie', op)} />
+                <label>Serie Intralox</label>
+                <div className="bt-radio-grid">
+                  {['S8026', 'S8050', 'S8126', 'S8140', 'Otro'].map(op => (
+                    <label key={op} className="bt-radio">
+                      <input type="radio" name="serie_intralox" checked={data.serie_intralox === op} onChange={() => setField('serie_intralox', op)} />
                       {op}
                     </label>
                   ))}
                 </div>
-                {data.estilo_superficie.includes('Otro') && (
-                  <input placeholder="Especificar" value={data.estilo_superficie_otro} onChange={e => setField('estilo_superficie_otro', e.target.value)} />
+                {data.serie_intralox === 'Otro' && (
+                  <input placeholder="Especificar" value={data.serie_intralox_otro} onChange={e => setField('serie_intralox_otro', e.target.value)} />
                 )}
               </div>
 
               <div className="bt-field">
-                <label>Color / material superficial</label>
+                <label>Estilo</label>
                 <div className="bt-radio-grid">
-                  {['Blanco estándar', 'Azul (detectable)', 'Negro', 'Antiadherente especial', 'Otro'].map(op => (
+                  {['Flat Top', 'Diamond Top', 'Nub Top', 'Ribbed V-Top', 'Otro'].map(op => (
                     <label key={op} className="bt-radio">
-                      <input type="radio" name="color_material_superficial" checked={data.color_material_superficial === op} onChange={() => setField('color_material_superficial', op)} />
+                      <input type="radio" name="estilo" checked={data.estilo === op} onChange={() => setField('estilo', op)} />
                       {op}
                     </label>
                   ))}
                 </div>
-                {data.color_material_superficial === 'Otro' && (
-                  <input placeholder="Especificar" value={data.color_material_otro} onChange={e => setField('color_material_otro', e.target.value)} />
+                {data.estilo === 'Otro' && (
+                  <input placeholder="Especificar" value={data.estilo_otro} onChange={e => setField('estilo_otro', e.target.value)} />
+                )}
+              </div>
+
+              <div className="bt-field">
+                <label>Color de superficie</label>
+                <input value={data.color_superficie} onChange={e => setField('color_superficie', e.target.value)} />
+              </div>
+
+              <div className="bt-field">
+                <label>Material de la banda</label>
+                <div className="bt-radio-grid">
+                  {['PU', 'PU A23', 'Dura', 'Cold Use', 'High Temp', 'Otro'].map(op => (
+                    <label key={op} className="bt-radio">
+                      <input type="radio" name="material_banda" checked={data.material_banda === op} onChange={() => setField('material_banda', op)} />
+                      {op}
+                    </label>
+                  ))}
+                </div>
+                {data.material_banda === 'Otro' && (
+                  <input placeholder="Especificar" value={data.material_banda_otro} onChange={e => setField('material_banda_otro', e.target.value)} />
                 )}
               </div>
 
@@ -516,41 +604,35 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
 
           {step === 4 && (
             <div className="bt-step">
-              <h2>Catarina / Rueda de Tracción y Eje</h2>
+              <h2>Sprocket / Rueda de Tracción y Eje</h2>
 
               <div className="bt-row">
                 <div className="bt-field">
-                  <label>Diámetro de paso de catarina (mm)</label>
-                  <input type="number" value={data.diametro_paso_catarina} onChange={e => setField('diametro_paso_catarina', e.target.value)} />
+                  <label>Diámetro Ext Sprocket (mm)</label>
+                  <input type="number" value={data.diametro_ext_sprocket} onChange={e => setField('diametro_ext_sprocket', e.target.value)} />
                 </div>
                 <div className="bt-field">
                   <label>No. de dientes</label>
                   <input type="number" value={data.no_dientes} onChange={e => setField('no_dientes', e.target.value)} />
                 </div>
               </div>
-              <div className="bt-row">
-                <div className="bt-field">
-                  <label>Barreno / diámetro interior (mm)</label>
-                  <input type="number" value={data.barreno_diametro_interior} onChange={e => setField('barreno_diametro_interior', e.target.value)} />
-                </div>
-                <div className="bt-field">
-                  <label>Ancho de cara de catarina (mm)</label>
-                  <input type="number" value={data.ancho_cara_catarina} onChange={e => setField('ancho_cara_catarina', e.target.value)} />
-                </div>
+              <div className="bt-field">
+                <label>Diámetro Int Sprocket (mm)</label>
+                <input type="number" value={data.diametro_int_sprocket} onChange={e => setField('diametro_int_sprocket', e.target.value)} />
               </div>
 
               <div className="bt-field">
-                <label>Material de catarina</label>
+                <label>Material de Sprocket</label>
                 <div className="bt-radio-grid">
                   {['Acero al carbono', 'Inoxidable 303/304', 'Inoxidable 316', 'Plástico / Delrin', 'Otro'].map(op => (
                     <label key={op} className="bt-radio">
-                      <input type="radio" name="material_catarina" checked={data.material_catarina === op} onChange={() => setField('material_catarina', op)} />
+                      <input type="radio" name="material_sprocket" checked={data.material_sprocket === op} onChange={() => setField('material_sprocket', op)} />
                       {op}
                     </label>
                   ))}
                 </div>
-                {data.material_catarina === 'Otro' && (
-                  <input placeholder="Especificar" value={data.material_catarina_otro} onChange={e => setField('material_catarina_otro', e.target.value)} />
+                {data.material_sprocket === 'Otro' && (
+                  <input placeholder="Especificar" value={data.material_sprocket_otro} onChange={e => setField('material_sprocket_otro', e.target.value)} />
                 )}
               </div>
 
@@ -611,25 +693,13 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
                   <input type="number" value={data.espaciado_productos} onChange={e => setField('espaciado_productos', e.target.value)} />
                 </div>
               </div>
-              <div className="bt-row">
-                <div className="bt-field">
-                  <label>Carga total (kg o kg/m²)</label>
-                  <input value={data.carga_total} onChange={e => setField('carga_total', e.target.value)} />
-                </div>
-                <div className="bt-field">
-                  <label>Carga individual por producto (kg o g)</label>
-                  <input value={data.carga_individual} onChange={e => setField('carga_individual', e.target.value)} />
-                </div>
+              <div className="bt-field">
+                <label>Carga total (kg o kg/m²)</label>
+                <input value={data.carga_total} onChange={e => setField('carga_total', e.target.value)} />
               </div>
-              <div className="bt-row">
-                <div className="bt-field">
-                  <label>Velocidad de banda (m/min)</label>
-                  <input type="number" value={data.velocidad_banda} onChange={e => setField('velocidad_banda', e.target.value)} />
-                </div>
-                <div className="bt-field">
-                  <label>Producción requerida (kg/h o pza/h)</label>
-                  <input value={data.produccion_requerida} onChange={e => setField('produccion_requerida', e.target.value)} />
-                </div>
+              <div className="bt-field">
+                <label>Velocidad de banda (m/min)</label>
+                <input type="number" value={data.velocidad_banda} onChange={e => setField('velocidad_banda', e.target.value)} />
               </div>
 
               <div className="bt-field">
@@ -665,15 +735,9 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
                 </div>
               </div>
 
-              <div className="bt-row">
-                <div className="bt-field">
-                  <label>Ángulo de inclinación / declinación (°)</label>
-                  <input type="number" value={data.angulo_inclinacion} onChange={e => setField('angulo_inclinacion', e.target.value)} />
-                </div>
-                <div className="bt-field">
-                  <label>Ubicación del motriz</label>
-                  <input value={data.ubicacion_motriz} onChange={e => setField('ubicacion_motriz', e.target.value)} />
-                </div>
+              <div className="bt-field">
+                <label>Ángulo de inclinación / declinación (°)</label>
+                <input type="number" value={data.angulo_inclinacion} onChange={e => setField('angulo_inclinacion', e.target.value)} />
               </div>
 
               <div className="bt-field">
@@ -689,17 +753,47 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
                 {data.guardas_laterales === 'Otro' && (
                   <input placeholder="Especificar" value={data.guardas_laterales_otro} onChange={e => setField('guardas_laterales_otro', e.target.value)} />
                 )}
+                {data.guardas_laterales && data.guardas_laterales !== 'Sin guardas' && (
+                  <div className="bt-field bt-subcampos">
+                    <label>Altura de sidewall / guarda (mm)</label>
+                    <input type="number" value={data.altura_sidewall} onChange={e => setField('altura_sidewall', e.target.value)} />
+                  </div>
+                )}
               </div>
 
-              <div className="bt-row">
-                <div className="bt-field">
-                  <label>Altura de sidewall / guarda (mm)</label>
-                  <input type="number" value={data.altura_sidewall} onChange={e => setField('altura_sidewall', e.target.value)} />
+              <div className="bt-field">
+                <label>Empujadores</label>
+                <div className="bt-radio-grid">
+                  {['Sí', 'No'].map(op => (
+                    <label key={op} className="bt-radio">
+                      <input type="radio" name="empujadores" checked={data.empujadores === op} onChange={() => setField('empujadores', op)} />
+                      {op}
+                    </label>
+                  ))}
                 </div>
-                <div className="bt-field">
-                  <label>Espaciado entre tacos (mm)</label>
-                  <input type="number" value={data.espaciado_tacos} onChange={e => setField('espaciado_tacos', e.target.value)} />
-                </div>
+                {data.empujadores === 'Sí' && (
+                  <div className="bt-subcampos">
+                    <div className="bt-field">
+                      <label>Tipo de Empujador</label>
+                      <select value={data.tipo_empujador} onChange={e => setField('tipo_empujador', e.target.value)}>
+                        <option value="">Seleccionar...</option>
+                        <option value="Recto">Recto</option>
+                        <option value="Scoop">Scoop</option>
+                        <option value="Inclinado">Inclinado</option>
+                      </select>
+                    </div>
+                    <div className="bt-row">
+                      <div className="bt-field">
+                        <label>Alto de Empujador (mm)</label>
+                        <input type="number" value={data.altura_empujador} onChange={e => setField('altura_empujador', e.target.value)} />
+                      </div>
+                      <div className="bt-field">
+                        <label>Ancho de Empujador (mm)</label>
+                        <input type="number" value={data.ancho_empujador} onChange={e => setField('ancho_empujador', e.target.value)} />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="bt-field">
@@ -748,25 +842,13 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
                   <input value={data.frecuencia_limpieza} onChange={e => setField('frecuencia_limpieza', e.target.value)} />
                 </div>
               </div>
-              <div className="bt-row">
-                <div className="bt-field">
-                  <label>Químicos de limpieza usados</label>
-                  <input value={data.quimicos_limpieza} onChange={e => setField('quimicos_limpieza', e.target.value)} />
-                </div>
-                <div className="bt-field">
-                  <label>Concentración química (%)</label>
-                  <input value={data.concentracion_quimica} onChange={e => setField('concentracion_quimica', e.target.value)} />
-                </div>
+              <div className="bt-field">
+                <label>Químicos de limpieza usados</label>
+                <input value={data.quimicos_limpieza} onChange={e => setField('quimicos_limpieza', e.target.value)} />
               </div>
-              <div className="bt-row">
-                <div className="bt-field">
-                  <label>Temperatura del medio de limpieza (°C)</label>
-                  <input type="number" value={data.temp_medio_limpieza} onChange={e => setField('temp_medio_limpieza', e.target.value)} />
-                </div>
-                <div className="bt-field">
-                  <label>Tiempo de exposición de la banda</label>
-                  <input value={data.tiempo_exposicion} onChange={e => setField('tiempo_exposicion', e.target.value)} />
-                </div>
+              <div className="bt-field">
+                <label>Tiempo de exposición de la banda</label>
+                <input value={data.tiempo_exposicion} onChange={e => setField('tiempo_exposicion', e.target.value)} />
               </div>
             </div>
           )}
@@ -795,7 +877,7 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
           {step === 9 && (
             <div className="bt-step">
               <h2>Fotos y Videos</h2>
-              <p className="bt-hint">Evidencia visual: equipo, horno, catarina, producto.</p>
+              <p className="bt-hint">Evidencia visual: equipo, horno, Sprocket, producto.</p>
 
               <button type="button" className="bt-photo-btn" onClick={() => photoInputRef.current?.click()}>
                 📷 Toca para agregar fotos
@@ -875,8 +957,8 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
               <ul className="bt-estado-list">
                 <li className={data.empresa ? 'ok' : 'pend'}>{data.empresa ? '✅' : '⏳'} Datos del Cliente</li>
                 <li className={data.tipo_proceso.length > 0 ? 'ok' : 'pend'}>{data.tipo_proceso.length > 0 ? '✅' : '⏳'} Tipo de Proceso / Equipo</li>
-                <li className={data.estilo_superficie.length > 0 ? 'ok' : 'pend'}>{data.estilo_superficie.length > 0 ? '✅' : '⏳'} Especificación de Banda</li>
-                <li className={data.diametro_paso_catarina ? 'ok' : 'pend'}>{data.diametro_paso_catarina ? '✅' : '⏳'} Catarina / Rueda y Eje</li>
+                <li className={data.estilo ? 'ok' : 'pend'}>{data.estilo ? '✅' : '⏳'} Especificación de Banda</li>
+                <li className={data.diametro_ext_sprocket ? 'ok' : 'pend'}>{data.diametro_ext_sprocket ? '✅' : '⏳'} Sprocket / Rueda y Eje</li>
                 <li className={data.descripcion_producto ? 'ok' : 'pend'}>{data.descripcion_producto ? '✅' : '⏳'} Producto Transportado</li>
                 <li className={data.fotos.length > 0 ? 'ok' : 'pend'}>{data.fotos.length > 0 ? '✅' : '⏳'} Fotos y Videos ({data.fotos.length})</li>
                 <li className={data.firma_tecnico ? 'ok' : 'pend'}>{data.firma_tecnico ? '✅' : '⏳'} Firmas</li>
@@ -892,7 +974,7 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
               <h3 className="bt-subtitle">Banda ThermoDrive</h3>
               <div className="bt-resumen-grid">
                 <span>Ancho:</span><b>{data.ancho_banda ? `${data.ancho_banda} mm` : '—'}</b>
-                <span>Estilo superficie:</span><b>{data.estilo_superficie.join(', ') || '—'}</b>
+                <span>Estilo:</span><b>{data.estilo || '—'}</b>
                 <span>Temp. máx. operación:</span><b>{data.temp_max_operacion ? `${data.temp_max_operacion} °C` : '—'}</b>
               </div>
 
@@ -904,6 +986,30 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
                   {loading ? '⏳ Enviando...' : '✅ Enviar Levantamiento'}
                 </button>
               </div>
+            </div>
+          )}
+
+          {onAgregarBanda && step >= 2 && step <= (TOTAL_PASOS_FINAL - 1) && (
+            <div className="bt-multi-banda">
+              {!mostrarSelectorBanda ? (
+                <button type="button" className="bt-btn-agregar-banda" onClick={() => setMostrarSelectorBanda(true)} disabled={loading}>
+                  + Agregar otra banda a este levantamiento
+                </button>
+              ) : (
+                <div className="bt-selector-banda-inline">
+                  <p className="bt-hint">Esta banda se guardara y podras continuar con la siguiente usando los mismos datos del cliente. Al firmar la ultima banda, la firma aplicara a todas.</p>
+                  <div className="bt-tipos-grid">
+                    {TIPOS_BANDA.map((t) => (
+                      <button key={t.id} type="button" className="bt-tipo-btn" onClick={() => handleAgregarOtraBanda(t.id)} disabled={loading}>
+                        {t.nombre}
+                      </button>
+                    ))}
+                  </div>
+                  <button type="button" className="bt-btn-cancelar-banda" onClick={() => setMostrarSelectorBanda(false)} disabled={loading}>
+                    Cancelar
+                  </button>
+                </div>
+              )}
             </div>
           )}
 

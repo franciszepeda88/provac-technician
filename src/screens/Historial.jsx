@@ -55,6 +55,19 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
     });
   }, [busqueda, filtroTipo, filtroEstado, levantamientos]);
 
+  // Varias bandas pueden compartir el mismo folio (un levantamiento con
+  // varias bandas). Se agrupan para mostrarlas juntas en vez de como
+  // tarjetas sueltas y repetidas del mismo cliente.
+  const gruposPorFolio = useMemo(() => {
+    const mapa = new Map();
+    filtrados.forEach((lev) => {
+      const key = lev.folio && lev.folio.trim() ? lev.folio : `sin-folio-${lev.id}`;
+      if (!mapa.has(key)) mapa.set(key, []);
+      mapa.get(key).push(lev);
+    });
+    return Array.from(mapa.values());
+  }, [filtrados]);
+
   const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-HN', { day: '2-digit', month: 'short', year: 'numeric' });
 
   // La lista no trae fotos ni firmas (para que cargue rápido); se piden completas
@@ -135,26 +148,52 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
         )}
 
         <div className="hist-list">
-          {filtrados.map((lev) => (
-            <button key={lev.id} className="hist-card" onClick={() => abrirDetalle(lev)} disabled={cargandoDetalle === lev.id}>
-              <div className="hist-card-top">
-                <span className="hist-cliente">{lev.cliente_nombre}</span>
-                <span className={`hist-badge hist-badge-${lev.estado}`}>{lev.estado || 'completo'}</span>
-              </div>
-              <div className="hist-card-meta">
-                <span>{TIPO_LABELS[lev.tipo_banda] || lev.tipo_banda}</span>
-                <span>·</span>
-                <span>{formatearFecha(lev.created_at)}</span>
-                {lev.folio && (
-                  <>
+          {gruposPorFolio.map((grupo) => {
+            if (grupo.length === 1) {
+              const lev = grupo[0];
+              return (
+                <button key={lev.id} className="hist-card" onClick={() => abrirDetalle(lev)} disabled={cargandoDetalle === lev.id}>
+                  <div className="hist-card-top">
+                    <span className="hist-cliente">{lev.cliente_nombre}</span>
+                    <span className={`hist-badge hist-badge-${lev.estado}`}>{lev.estado || 'completo'}</span>
+                  </div>
+                  <div className="hist-card-meta">
+                    <span>{TIPO_LABELS[lev.tipo_banda] || lev.tipo_banda}</span>
                     <span>·</span>
-                    <span>{lev.folio}</span>
-                  </>
-                )}
-                {cargandoDetalle === lev.id && <span>· Cargando...</span>}
+                    <span>{formatearFecha(lev.created_at)}</span>
+                    {lev.folio && (
+                      <>
+                        <span>·</span>
+                        <span>{lev.folio}</span>
+                      </>
+                    )}
+                    {cargandoDetalle === lev.id && <span>· Cargando...</span>}
+                  </div>
+                </button>
+              );
+            }
+            const primero = grupo[0];
+            return (
+              <div key={primero.folio} className="hist-folio-grupo">
+                <div className="hist-folio-header">
+                  <span className="hist-cliente">{primero.cliente_nombre}</span>
+                  <span className="hist-folio-badge">{primero.folio} · {grupo.length} bandas</span>
+                </div>
+                {grupo.map((lev) => (
+                  <button key={lev.id} className="hist-card hist-card-sub" onClick={() => abrirDetalle(lev)} disabled={cargandoDetalle === lev.id}>
+                    <div className="hist-card-top">
+                      <span className="hist-cliente">{TIPO_LABELS[lev.tipo_banda] || lev.tipo_banda}</span>
+                      <span className={`hist-badge hist-badge-${lev.estado}`}>{lev.estado || 'completo'}</span>
+                    </div>
+                    <div className="hist-card-meta">
+                      <span>{formatearFecha(lev.created_at)}</span>
+                      {cargandoDetalle === lev.id && <span>· Cargando...</span>}
+                    </div>
+                  </button>
+                ))}
               </div>
-            </button>
-          ))}
+            );
+          })}
         </div>
       </main>
 

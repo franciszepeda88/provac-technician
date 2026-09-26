@@ -2,14 +2,16 @@ import { useState, useRef, useEffect } from 'react';
 import { API_URL } from '../config';
 import SignaturePad from '../components/SignaturePad';
 import './BandaTransporteForm.css';
+import { TIPOS_BANDA, CAMPOS_CLIENTE } from '../constants/bandas';
 
-const TOTAL_PASOS = 8;
+const TOTAL_PASOS = 9;
 const TITULOS = [
   'Datos del Cliente',
   'Aplicación & Condiciones',
   'Especificaciones de Banda',
   'Dimensiones de la Banda',
   'Accesorios & Empalme',
+  'Observaciones',
   'Fotos y Videos',
   'Firmas y Conformidad',
   'Confirmar Levantamiento'
@@ -43,6 +45,7 @@ const initialData = {
   turnos_dia: '',
   ambiente: [],
   contacto_producto: [],
+  contacto_producto_otro: '',
   // Paso 3
   marca_linea: '',
   referencia_actual: '',
@@ -50,31 +53,33 @@ const initialData = {
   num_capas: '',
   espesor_total: '',
   color: '',
-  dureza_shore: '',
   cubierta_superior: '',
+  cubierta_superior_otro: '',
   cubierta_inferior: '',
+  cubierta_inferior_otro: '',
   // Paso 4
   ancho_banda: '',
-  espesor_total_dim: '',
   largo_circuito_cerrado: '',
   distancia_centros: '',
-  largo_abierto: '',
-  ancho_util: '',
-  ancho_libre: '',
   // Paso 5
   tipo_empalme: '',
+  tipo_empalme_otro: '',
   metodo_union: '',
+  modelo_empalme_mecanico: '',
   largo_empalme: '',
   angulo_empalme: '',
-  ubicacion_empalme: '',
   guia_tracking: '',
+  guia_especificaciones: '',
+  guia_indentacion: '',
   posicion_guia: '',
   tacos: '',
   alto_tacos: '',
   paso_tacos: '',
-  // Paso 6
-  fotos: [],
+  // Paso 6 - Observaciones
+  observaciones: '',
   // Paso 7
+  fotos: [],
+  // Paso 8
   tecnico_nombre: '',
   tecnico_puesto: '',
   firma_tecnico: '',
@@ -84,8 +89,11 @@ const initialData = {
   firma_cliente: ''
 };
 
-export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrInicio, existente }) {
+export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrInicio, existente, multiBanda, onAgregarBanda, onSesionTerminada }) {
   const construirDataInicial = () => {
+    if (multiBanda && !existente) {
+      return { ...initialData, ...multiBanda.cliente, folio: multiBanda.folio || initialData.folio };
+    }
     if (!existente) return initialData;
     const { cliente_nombre, ubicacion, folio, fotos, firma_tecnico, firma_cliente, datos } = existente;
     return {
@@ -100,14 +108,15 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
     };
   };
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(() => (multiBanda && !existente ? 2 : 1));
+  const [mostrarSelectorBanda, setMostrarSelectorBanda] = useState(false);
   const [data, setData] = useState(construirDataInicial);
 
   // Al abrir un levantamiento NUEVO (no edición), pide de inmediato el folio
   // correlativo real al backend, para no dejar el placeholder "AUTO" visible
   // mientras el técnico llena el formulario.
   useEffect(() => {
-    if (existente) return;
+    if (existente || multiBanda) return;
     const token = localStorage.getItem('token');
     const pedirFolio = (intento = 1) => {
       fetch(`${API_URL}/folio/siguiente`, {
@@ -176,8 +185,52 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
       fotos,
       firma_tecnico,
       firma_cliente,
-      datos: resto
+      datos: { ...resto, fecha_firma: resto.fecha_firma || new Date().toISOString().slice(0, 10) }
     };
+  };
+
+  const handleAgregarOtraBanda = async (nuevoTipo) => {
+    setError('');
+    if (!data.empresa) {
+      setError('⚠️ Falta el nombre de la empresa/cliente (Paso 1)');
+      setStep(1);
+      return;
+    }
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const esEdicion = Boolean(existente && existente.id);
+      const url = esEdicion ? `${API_URL}/levantamientos/${existente.id}` : `${API_URL}/levantamientos`;
+      const method = esEdicion ? 'PUT' : 'POST';
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(buildPayload('borrador')),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        setError(result.error || 'Error al guardar la banda');
+        setLoading(false);
+        return;
+      }
+      const savedId = esEdicion ? existente.id : result.levantamiento.id;
+      setLoading(false);
+      setMostrarSelectorBanda(false);
+      if (onAgregarBanda) {
+        const cliente = {};
+        CAMPOS_CLIENTE.forEach((campo) => { cliente[campo] = data[campo]; });
+        onAgregarBanda({
+          folio: data.folio,
+          cliente,
+          pendienteId: savedId,
+          pendienteTipo: 'transporte',
+          nuevoTipo
+        });
+      }
+    } catch (err) {
+      setError('❌ Error de conexión: ' + err.message);
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (estado) => {
@@ -213,15 +266,49 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
         return;
       }
 
+      if (estado === 'completo' && multiBanda && multiBanda.pendientes && multiBanda.pendientes.length > 0) {
+        await Promise.all(multiBanda.pendientes.map(async (p) => {
+          try {
+            const detalleRes = await fetch(`${API_URL}/levantamientos/${p.id}`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const detalle = await detalleRes.json();
+            const datosPrevios = (detalle && detalle.levantamiento && detalle.levantamiento.datos) || {};
+            await fetch(`${API_URL}/levantamientos/${p.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify({
+                estado: 'completo',
+                firma_tecnico: data.firma_tecnico,
+                firma_cliente: data.firma_cliente,
+                datos: {
+                  ...datosPrevios,
+                  tecnico_nombre: data.tecnico_nombre,
+                  tecnico_puesto: data.tecnico_puesto,
+                  fecha_firma: data.fecha_firma,
+                  salida: data.salida,
+                  cliente_nombre_firma: data.cliente_nombre_firma,
+                  cliente_puesto: data.cliente_puesto
+                }
+              })
+            });
+          } catch (e) { /* si una falla, seguimos con las demas */ }
+        }));
+      }
+
       setSuccess(estado === 'completo' ? '✅ Levantamiento guardado' : '💾 Borrador guardado');
       setLoading(false);
 
       if (estado === 'completo' && !esEdicion) {
-        setTimeout(() => {
-          setData(initialData);
-          setStep(1);
-          setSuccess('');
-        }, 1800);
+        if (multiBanda && multiBanda.pendientes && multiBanda.pendientes.length > 0 && onSesionTerminada) {
+          setTimeout(() => { onSesionTerminada(); }, 1200);
+        } else {
+          setTimeout(() => {
+            setData(initialData);
+            setStep(1);
+            setSuccess('');
+          }, 1800);
+        }
       }
     } catch (err) {
       setError('❌ Error de conexión: ' + err.message);
@@ -254,6 +341,9 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
 
       <div className="bt-progress-header">
         <div className="bt-tipo-banner">Banda de Transporte</div>
+        {multiBanda && (
+          <div className="bt-multibanda-banner">📎 Folio {multiBanda.folio} · {multiBanda.pendientes.length} banda(s) ya guardada(s) en este levantamiento</div>
+        )}
         <div className="bt-progress-label">
           Paso {step} de {TOTAL_PASOS} · {TITULOS[step - 1]}
         </div>
@@ -429,7 +519,7 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
               <div className="bt-field">
                 <label>Contacto con Producto</label>
                 <div className="bt-check-grid">
-                  {['Aceitoso/Graso', 'Abrasivo', 'Químicos', 'Alimentos'].map(op => (
+                  {['Aceitoso/Graso', 'Abrasivo', 'Químicos', 'Alimentos', 'Otro'].map(op => (
                     <label key={op} className="bt-check">
                       <input type="checkbox" checked={data.contacto_producto.includes(op)} onChange={() => toggleCheck('contacto_producto', op)} />
                       {op}
@@ -437,6 +527,12 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
                   ))}
                 </div>
               </div>
+            {data.contacto_producto.includes('Otro') && (
+              <div className="bt-field">
+                <label>Especificar otro contacto con producto</label>
+                <input value={data.contacto_producto_otro} onChange={e => setField('contacto_producto_otro', e.target.value)} />
+              </div>
+            )}
             </div>
           )}
 
@@ -447,7 +543,7 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
               <div className="bt-field">
                 <label>Marca / Línea</label>
                 <div className="bt-radio-grid">
-                  {['Habasit', 'Yongli', 'Betteveve', 'Otra'].map(op => (
+                  {['Habasit', 'Yongli', 'BeltService', 'Otra'].map(op => (
                     <label key={op} className="bt-radio">
                       <input type="radio" name="marca_linea" checked={data.marca_linea === op} onChange={() => setField('marca_linea', op)} />
                       {op}
@@ -489,34 +585,36 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
                   <label>Color</label>
                   <input placeholder="Negro, Verde, blanco..." value={data.color} onChange={e => setField('color', e.target.value)} />
                 </div>
-                <div className="bt-field">
-                  <label>Dureza (Shore)</label>
-                  <input type="number" value={data.dureza_shore} onChange={e => setField('dureza_shore', e.target.value)} />
-                </div>
               </div>
 
               <div className="bt-field">
                 <label>Cubierta Superior</label>
                 <div className="bt-radio-grid">
-                  {['Lisa', 'Antideslizante', 'Rugosa', 'Diamante'].map(op => (
+                  {['Lisa', 'Antideslizante', 'Rugosa', 'Diamante', 'Otro'].map(op => (
                     <label key={op} className="bt-radio">
                       <input type="radio" name="cubierta_superior" checked={data.cubierta_superior === op} onChange={() => setField('cubierta_superior', op)} />
                       {op}
                     </label>
                   ))}
                 </div>
+                {data.cubierta_superior === 'Otro' && (
+                  <input placeholder="Especificar cubierta superior" value={data.cubierta_superior_otro} onChange={e => setField('cubierta_superior_otro', e.target.value)} />
+                )}
               </div>
 
               <div className="bt-field">
                 <label>Cubierta Inferior</label>
                 <div className="bt-radio-grid">
-                  {['Tela lisa', 'Fieltro', 'Alta fricción', 'Sin cubierta'].map(op => (
+                  {['Tela lisa', 'Fieltro', 'Alta fricción', 'Sin cubierta', 'Otro'].map(op => (
                     <label key={op} className="bt-radio">
                       <input type="radio" name="cubierta_inferior" checked={data.cubierta_inferior === op} onChange={() => setField('cubierta_inferior', op)} />
                       {op}
                     </label>
                   ))}
                 </div>
+                {data.cubierta_inferior === 'Otro' && (
+                  <input placeholder="Especificar cubierta inferior" value={data.cubierta_inferior_otro} onChange={e => setField('cubierta_inferior_otro', e.target.value)} />
+                )}
               </div>
             </div>
           )}
@@ -527,15 +625,9 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
               <p className="bt-hint">Toma las medidas directamente del equipo para máxima precisión.</p>
 
               <h3 className="bt-subtitle">Medidas Principales</h3>
-              <div className="bt-row">
-                <div className="bt-field">
-                  <label>Ancho de banda (mm)</label>
-                  <input type="number" value={data.ancho_banda} onChange={e => setField('ancho_banda', e.target.value)} />
-                </div>
-                <div className="bt-field">
-                  <label>Espesor total (mm)</label>
-                  <input type="number" step="0.01" value={data.espesor_total_dim} onChange={e => setField('espesor_total_dim', e.target.value)} />
-                </div>
+              <div className="bt-field">
+                <label>Ancho de banda (mm)</label>
+                <input type="number" value={data.ancho_banda} onChange={e => setField('ancho_banda', e.target.value)} />
               </div>
 
               <h3 className="bt-subtitle">Medidas de Circuito Cerrado</h3>
@@ -547,24 +639,6 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
                 <label>Distancia entre centros (mm)</label>
                 <input type="number" value={data.distancia_centros} onChange={e => setField('distancia_centros', e.target.value)} />
               </div>
-
-              <h3 className="bt-subtitle">Medidas Abiertas (Tensor Relajado)</h3>
-              <div className="bt-field">
-                <label>Largo abierto (mm)</label>
-                <input type="number" value={data.largo_abierto} onChange={e => setField('largo_abierto', e.target.value)} />
-              </div>
-
-              <h3 className="bt-subtitle">Área Útil de Transporte</h3>
-              <div className="bt-row">
-                <div className="bt-field">
-                  <label>Ancho útil (mm)</label>
-                  <input type="number" value={data.ancho_util} onChange={e => setField('ancho_util', e.target.value)} />
-                </div>
-                <div className="bt-field">
-                  <label>Ancho libre entre laterales (mm)</label>
-                  <input type="number" value={data.ancho_libre} onChange={e => setField('ancho_libre', e.target.value)} />
-                </div>
-              </div>
             </div>
           )}
 
@@ -575,24 +649,29 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
               <div className="bt-field">
                 <label>Tipo de Empalme</label>
                 <div className="bt-radio-grid">
-                  {['Finger (dedos)', 'Escalonado', 'Diagonal', 'Con adhesivo', 'Grapa metálica', 'Sin fin'].map(op => (
+                  {['Finger', 'Sobreposición', 'Doble Finger', 'Empalme Mecánico', 'Otro'].map(op => (
                     <label key={op} className="bt-radio">
                       <input type="radio" name="tipo_empalme" checked={data.tipo_empalme === op} onChange={() => setField('tipo_empalme', op)} />
                       {op}
                     </label>
                   ))}
                 </div>
+                {data.tipo_empalme === 'Otro' && (
+                  <input placeholder="Especificar tipo de empalme" value={data.tipo_empalme_otro} onChange={e => setField('tipo_empalme_otro', e.target.value)} />
+                )}
               </div>
 
               <div className="bt-field">
                 <label>Método de unión</label>
                 <select value={data.metodo_union} onChange={e => setField('metodo_union', e.target.value)}>
                   <option value="">- Seleccionar -</option>
-                  <option value="vulcanizado_caliente">Vulcanizado en caliente</option>
+                  <option value="termofusionado">Termofusionado</option>
                   <option value="vulcanizado_frio">Vulcanizado en frío</option>
-                  <option value="mecanico">Mecánico</option>
-                  <option value="adhesivo">Adhesivo</option>
+                  <option value="mecanico">Empalme Mecánico</option>
                 </select>
+                {data.metodo_union === 'mecanico' && (
+                  <input placeholder="Modelo de empalme mecánico a usar" value={data.modelo_empalme_mecanico} onChange={e => setField('modelo_empalme_mecanico', e.target.value)} />
+                )}
               </div>
 
               <div className="bt-row">
@@ -606,11 +685,6 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
                 </div>
               </div>
 
-              <div className="bt-field">
-                <label>Ubicación de empalme</label>
-                <input placeholder="Ej: Inferior izquierda" value={data.ubicacion_empalme} onChange={e => setField('ubicacion_empalme', e.target.value)} />
-              </div>
-
               <h3 className="bt-subtitle">Guía de Tracking</h3>
               <div className="bt-field">
                 <label>Tipo de guía</label>
@@ -622,6 +696,14 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
                     </label>
                   ))}
                 </div>
+                {data.guia_tracking && data.guia_tracking !== 'Sin guía' && (
+                  <div className="bt-subcampos">
+                    <label>Especificaciones y medidas de la guía</label>
+                    <input value={data.guia_especificaciones} onChange={e => setField('guia_especificaciones', e.target.value)} />
+                    <label>Indentación de la guía</label>
+                    <input value={data.guia_indentacion} onChange={e => setField('guia_indentacion', e.target.value)} />
+                  </div>
+                )}
               </div>
               <div className="bt-field">
                 <label>Posición</label>
@@ -630,14 +712,15 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
                   <option value="central">Central</option>
                   <option value="lateral_izq">Lateral izquierda</option>
                   <option value="lateral_der">Lateral derecha</option>
+                  <option value="ambos_laterales">Ambos laterales</option>
                 </select>
               </div>
 
-              <h3 className="bt-subtitle">Tacos / Perfiles Transversales</h3>
+              <h3 className="bt-subtitle">Empujadores</h3>
               <div className="bt-field">
-                <label>Tipo de taco</label>
+                <label>Tipo de Empujador</label>
                 <div className="bt-radio-grid">
-                  {['Sin tacos', 'Taco recto', 'Taco en T', 'Taco curvo'].map(op => (
+                  {['Sin Empujador', 'Empujador Recto', 'Empujador Inclinado', 'Empujador Mecánico'].map(op => (
                     <label key={op} className="bt-radio">
                       <input type="radio" name="tacos" checked={data.tacos === op} onChange={() => setField('tacos', op)} />
                       {op}
@@ -645,20 +728,32 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
                   ))}
                 </div>
               </div>
-              <div className="bt-row">
-                <div className="bt-field">
-                  <label>Alto (mm)</label>
-                  <input type="number" value={data.alto_tacos} onChange={e => setField('alto_tacos', e.target.value)} />
+              {data.tacos && data.tacos !== 'Sin Empujador' && (
+                <div className="bt-row">
+                  <div className="bt-field">
+                    <label>Alto Empujador (mm)</label>
+                    <input type="number" value={data.alto_tacos} onChange={e => setField('alto_tacos', e.target.value)} />
+                  </div>
+                  <div className="bt-field">
+                    <label>Distancia entre Empujadores (mm)</label>
+                    <input type="number" value={data.paso_tacos} onChange={e => setField('paso_tacos', e.target.value)} />
+                  </div>
                 </div>
-                <div className="bt-field">
-                  <label>Paso entre tacos (mm)</label>
-                  <input type="number" value={data.paso_tacos} onChange={e => setField('paso_tacos', e.target.value)} />
-                </div>
-              </div>
+              )}
             </div>
           )}
 
           {step === 6 && (
+            <div className="bt-step">
+              <h2>Observaciones</h2>
+              <div className="bt-field">
+                <label>Notas adicionales, riesgos, condiciones especiales, datos que falten por confirmar</label>
+                <textarea rows={6} value={data.observaciones} onChange={e => setField('observaciones', e.target.value)} />
+              </div>
+            </div>
+          )}
+
+          {step === 7 && (
             <div className="bt-step">
               <h2>Fotos y Videos</h2>
               <p className="bt-hint">Evidencia visual: captura fotos del equipo, empalme, accesorios de la zona de instalación.</p>
@@ -698,7 +793,7 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
             </div>
           )}
 
-          {step === 7 && (
+          {step === 8 && (
             <div className="bt-step">
               <h2>Firmas y Conformidad</h2>
               <p className="bt-hint bt-hint-warn">Con mi firma confirmo haber revisado el levantamiento y acepto que las especificaciones, dimensiones y accesorios descritos son los que PROVAC fabricará y entregará.</p>
@@ -714,10 +809,6 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
               </div>
               <SignaturePad label="Firma Digital *" initialValue={existente ? existente.firma_tecnico : ''} onSignatureChange={sig => setField('firma_tecnico', sig)} />
 
-              <div className="bt-field">
-                <label>Fecha</label>
-                <input type="date" value={data.fecha_firma} onChange={e => setField('fecha_firma', e.target.value)} />
-              </div>
               <div className="bt-field">
                 <label>Hora salida</label>
                 <input type="time" value={data.salida} onChange={e => setField('salida', e.target.value)} />
@@ -739,7 +830,7 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
             </div>
           )}
 
-          {step === 8 && (
+          {step === 9 && (
             <div className="bt-step">
               <h2>Confirmar Levantamiento</h2>
 
@@ -782,6 +873,30 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
                   {loading ? '⏳ Enviando...' : '✅ Enviar Levantamiento'}
                 </button>
               </div>
+            </div>
+          )}
+
+          {onAgregarBanda && step >= 2 && step <= (TOTAL_PASOS - 1) && (
+            <div className="bt-multi-banda">
+              {!mostrarSelectorBanda ? (
+                <button type="button" className="bt-btn-agregar-banda" onClick={() => setMostrarSelectorBanda(true)} disabled={loading}>
+                  + Agregar otra banda a este levantamiento
+                </button>
+              ) : (
+                <div className="bt-selector-banda-inline">
+                  <p className="bt-hint">Esta banda se guardara y podras continuar con la siguiente usando los mismos datos del cliente. Al firmar la ultima banda, la firma aplicara a todas.</p>
+                  <div className="bt-tipos-grid">
+                    {TIPOS_BANDA.map((t) => (
+                      <button key={t.id} type="button" className="bt-tipo-btn" onClick={() => handleAgregarOtraBanda(t.id)} disabled={loading}>
+                        {t.nombre}
+                      </button>
+                    ))}
+                  </div>
+                  <button type="button" className="bt-btn-cancelar-banda" onClick={() => setMostrarSelectorBanda(false)} disabled={loading}>
+                    Cancelar
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
