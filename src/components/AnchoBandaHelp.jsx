@@ -1,8 +1,14 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import './AnchoBandaHelp.css';
 
 export default function AnchoBandaHelp() {
   const [abierto, setAbierto] = useState(false);
+
+  const cerrar = (e) => {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    setAbierto(false);
+  };
 
   return (
     <>
@@ -15,12 +21,12 @@ export default function AnchoBandaHelp() {
         ?
       </button>
 
-      {abierto && (
-        <div className="abh-overlay" onClick={() => setAbierto(false)}>
+      {abierto && createPortal(
+        <div className="abh-overlay" onClick={cerrar}>
           <div className="abh-box" onClick={(e) => e.stopPropagation()}>
             <div className="abh-header">
               <h3>Cómo medir el ancho de banda</h3>
-              <button type="button" className="abh-close" onClick={() => setAbierto(false)}>✕</button>
+              <button type="button" className="abh-close" onClick={cerrar}>✕</button>
             </div>
 
             <div className="abh-anim-wrap">
@@ -47,11 +53,12 @@ export default function AnchoBandaHelp() {
               cualquier saliente, pestaña o guía lateral si la tiene.
             </p>
 
-            <button type="button" className="abh-entendido" onClick={() => setAbierto(false)}>
+            <button type="button" className="abh-entendido" onClick={cerrar}>
               Entendido
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
