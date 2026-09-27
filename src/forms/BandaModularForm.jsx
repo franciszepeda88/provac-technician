@@ -42,6 +42,7 @@ const curvaVacia = { long_recta_previa: '', radio_interior: '', angulo: '', dire
 const initialData = {
   // Paso 1 - Cliente
   folio: 'AUTO',
+  referencia_banda: '',
   fecha: '',
   entrada: '',
   salida: '',
@@ -882,6 +883,11 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
           {step === 5 && (
             <div className="bt-step">
               <h2>Datos de Aplicación</h2>
+
+              <div className="bt-field">
+                <label>Referencia de la Banda</label>
+                <input placeholder="Como identifica el cliente esta banda" value={data.referencia_banda} onChange={e => setField('referencia_banda', e.target.value)} />
+              </div>
 
               <div className="bt-field">
                 <label>Temperatura de Operación (°C)</label>

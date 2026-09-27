@@ -24,6 +24,7 @@ const TITULOS = [
 const initialData = {
   // Paso 1
   folio: 'AUTO',
+  referencia_banda: '',
   fecha: '',
   entrada: '',
   salida: '',
@@ -480,6 +481,11 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
           {step === 2 && (
             <div className="bt-step">
               <h2>Aplicación & Condiciones</h2>
+
+              <div className="bt-field">
+                <label>Referencia de la Banda</label>
+                <input placeholder="Como identifica el cliente esta banda" value={data.referencia_banda} onChange={e => setField('referencia_banda', e.target.value)} />
+              </div>
 
               <div className="bt-field">
                 <label>Industria *</label>

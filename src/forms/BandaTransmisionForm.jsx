@@ -28,6 +28,7 @@ const poleaVacia = { diametro_ext: '', ancho_cara: '', diametro_eje: '', largo_e
 const initialData = {
   // Paso 1 - Cliente
   folio: 'AUTO',
+  referencia_banda: '',
   fecha: '',
   entrada: '',
   salida: '',
@@ -509,6 +510,11 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
           {step === 2 && (
             <div className="bt-step">
               <h2>Aplicación & Condiciones de Operación</h2>
+
+              <div className="bt-field">
+                <label>Referencia de la Banda</label>
+                <input placeholder="Como identifica el cliente esta banda" value={data.referencia_banda} onChange={e => setField('referencia_banda', e.target.value)} />
+              </div>
 
               <div className="bt-row">
                 <div className="bt-field">

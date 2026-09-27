@@ -25,6 +25,7 @@ const TITULOS = [
 const initialData = {
   // Paso 1 - Cliente
   folio: 'AUTO',
+  referencia_banda: '',
   fecha: '',
   entrada: '',
   salida: '',
@@ -497,6 +498,11 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
           {step === 2 && (
             <div className="bt-step">
               <h2>Tipo de Proceso / Equipo</h2>
+
+              <div className="bt-field">
+                <label>Referencia de la Banda</label>
+                <input placeholder="Como identifica el cliente esta banda" value={data.referencia_banda} onChange={e => setField('referencia_banda', e.target.value)} />
+              </div>
 
               <div className="bt-field">
                 <label>Tipo de proceso</label>
