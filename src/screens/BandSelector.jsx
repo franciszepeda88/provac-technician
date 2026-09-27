@@ -29,16 +29,18 @@ const MARCAS = ['HABASIT', 'INTRALOX', 'YONGLI', 'BELTSERVICE'];
 export default function BandSelector({ usuario, onSelect, onLogout, onVerHistorial }) {
   return (
     <div className="selector-container">
-      <div className="selector-hero" style={{ backgroundImage: `url(${heroImg})` }}>
-        <nav className="selector-navbar">
-          <div className="nav-left">
-            <img src="/logo-provac.png" alt="PROVAC" className="nav-logo" />
-          </div>
-          <div className="nav-right">
-            <span className="user-info">{usuario.nombre}</span>
-            <button onClick={onLogout} className="logout-btn">Cerrar Sesión</button>
-          </div>
-        </nav>
+      <nav className="selector-navbar">
+        <div className="nav-left">
+          <img src="/logo-provac.png" alt="PROVAC" className="nav-logo" />
+        </div>
+        <div className="nav-right">
+          <span className="user-info">{usuario.nombre}</span>
+          <button onClick={onLogout} className="logout-btn">Cerrar Sesión</button>
+        </div>
+      </nav>
+
+      <div className="hero-bg" style={{ backgroundImage: `url(${heroImg})` }}>
+        <div className="hero-overlay" />
 
         <div className="hero-text">
           <div className="hero-eyebrow">
@@ -48,38 +50,38 @@ export default function BandSelector({ usuario, onSelect, onLogout, onVerHistori
           <h1>Bienvenido</h1>
           <p>Selecciona el tipo de levantamiento que vas a realizar</p>
         </div>
-      </div>
 
-      <main className="selector-main">
-        <button className="hist-link" onClick={onVerHistorial}>
-          <span>Mis Levantamientos</span>
-          <span className="hist-link-arrow">→</span>
-        </button>
+        <main className="selector-main">
+          <button className="hist-link" onClick={onVerHistorial}>
+            <span>Mis Levantamientos</span>
+            <span className="hist-link-arrow">→</span>
+          </button>
 
-        <div className="band-list">
-          {TIPOS_BANDA.map((tipo) => (
-            <button
-              key={tipo.id}
-              className="band-btn"
-              onClick={() => onSelect(tipo.id)}
-            >
-              <span className="band-name">{tipo.nombre}</span>
-              <span className="band-arrow">→</span>
-            </button>
-          ))}
-        </div>
-
-        <div className="marcas-strip">
-          <div className="marcas-label-row">
-            <span className="marcas-label">MARCAS / TECNOLOGÍAS</span>
-          </div>
-          <div className="marcas-list">
-            {MARCAS.map((marca) => (
-              <span key={marca} className="marca-item">{marca}</span>
+          <div className="band-list">
+            {TIPOS_BANDA.map((tipo) => (
+              <button
+                key={tipo.id}
+                className="band-btn"
+                onClick={() => onSelect(tipo.id)}
+              >
+                <span className="band-name">{tipo.nombre}</span>
+                <span className="band-arrow">→</span>
+              </button>
             ))}
           </div>
-        </div>
-      </main>
+
+          <div className="marcas-strip">
+            <div className="marcas-label-row">
+              <span className="marcas-label">MARCAS / TECNOLOGÍAS</span>
+            </div>
+            <div className="marcas-list">
+              {MARCAS.map((marca) => (
+                <span key={marca} className="marca-item">{marca}</span>
+              ))}
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
