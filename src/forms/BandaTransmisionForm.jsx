@@ -4,6 +4,7 @@ import SignaturePad from '../components/SignaturePad';
 import './BandaTransporteForm.css';
 import { TIPOS_BANDA, CAMPOS_CLIENTE } from '../constants/bandas';
 import { enviarOEncolar } from '../utils/offlineSubmit';
+import AnchoBandaHelp from '../components/AnchoBandaHelp';
 
 const TOTAL_PASOS = 11;
 const TITULOS = [
@@ -659,7 +660,7 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
 
               <div className="bt-row">
                 <div className="bt-field">
-                  <label>Ancho de banda (mm)</label>
+                  <label>Ancho de banda (mm) <AnchoBandaHelp /></label>
                   <input type="number" value={data.ancho_banda} onChange={e => setField('ancho_banda', e.target.value)} />
                 </div>
                 <div className="bt-field">
