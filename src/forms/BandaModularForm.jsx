@@ -5,6 +5,7 @@ import './BandaTransporteForm.css';
 import { TIPOS_BANDA, CAMPOS_CLIENTE } from '../constants/bandas';
 import { enviarOEncolar } from '../utils/offlineSubmit';
 import AnchoBandaHelp from '../components/AnchoBandaHelp';
+import CentroCentroHelp from '../components/CentroCentroHelp';
 
 const TITULOS_RECTA = [
   'Datos del Cliente',
@@ -653,7 +654,7 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
                   <input type="number" value={data.ancho_banda} onChange={e => setField('ancho_banda', e.target.value)} />
                 </div>
                 <div className="bt-field">
-                  <label>Largo centro a centro (m)</label>
+                  <label>Largo centro a centro (m) <CentroCentroHelp /></label>
                   <input type="number" step="0.01" value={data.largo_centro_centro} onChange={e => setField('largo_centro_centro', e.target.value)} />
                 </div>
               </div>

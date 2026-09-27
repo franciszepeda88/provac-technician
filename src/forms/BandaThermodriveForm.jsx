@@ -5,6 +5,7 @@ import './BandaTransporteForm.css';
 import { TIPOS_BANDA, CAMPOS_CLIENTE } from '../constants/bandas';
 import { enviarOEncolar } from '../utils/offlineSubmit';
 import AnchoBandaHelp from '../components/AnchoBandaHelp';
+import CentroCentroHelp from '../components/CentroCentroHelp';
 
 const TOTAL_PASOS_FINAL = 11;
 const TITULOS = [
@@ -597,7 +598,7 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
                   <input type="number" value={data.ancho_banda} onChange={e => setField('ancho_banda', e.target.value)} />
                 </div>
                 <div className="bt-field">
-                  <label>Largo centro a centro (m)</label>
+                  <label>Largo centro a centro (m) <CentroCentroHelp /></label>
                   <input type="number" step="0.01" value={data.largo_centro_centro} onChange={e => setField('largo_centro_centro', e.target.value)} />
                 </div>
               </div>

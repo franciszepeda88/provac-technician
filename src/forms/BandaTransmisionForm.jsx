@@ -5,6 +5,7 @@ import './BandaTransporteForm.css';
 import { TIPOS_BANDA, CAMPOS_CLIENTE } from '../constants/bandas';
 import { enviarOEncolar } from '../utils/offlineSubmit';
 import AnchoBandaHelp from '../components/AnchoBandaHelp';
+import CentroCentroHelp from '../components/CentroCentroHelp';
 
 const TOTAL_PASOS = 11;
 const TITULOS = [
@@ -670,7 +671,7 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
               </div>
               <div className="bt-row">
                 <div className="bt-field">
-                  <label>Distancia entre centros (mm)</label>
+                  <label>Distancia entre centros (mm) <CentroCentroHelp /></label>
                   <input type="number" value={data.distancia_centros} onChange={e => setField('distancia_centros', e.target.value)} />
                 </div>
                 <div className="bt-field">

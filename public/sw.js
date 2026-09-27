@@ -1,4 +1,4 @@
-const CACHE_NAME = 'provac-technician-v23';
+const CACHE_NAME = 'provac-technician-v24';
 const STATIC_ASSETS = [
   '/manifest.json',
   '/icon-192.png',
