@@ -11,6 +11,16 @@
   flex-direction: column;
 }
 
+.selector-hero {
+  position: relative;
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
 .selector-navbar {
   padding-top: max(50px, calc(env(safe-area-inset-top) + 16px));
   display: flex;
@@ -19,7 +29,6 @@
   padding-left: 20px;
   padding-right: 20px;
   padding-bottom: 14px;
-  background: rgba(0, 0, 0, 0.12);
   flex-wrap: wrap;
   gap: 10px;
 }
@@ -44,7 +53,7 @@
 }
 
 .logout-btn {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.18);
   color: white;
   border: 1px solid rgba(255,255,255,0.35);
   padding: 7px 14px;
@@ -53,31 +62,51 @@
   cursor: pointer;
 }
 
+.hero-text {
+  padding: 10px 20px 34px;
+  max-width: 480px;
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 10px;
+}
+
+.hero-eyebrow-bar {
+  width: 26px;
+  height: 3px;
+  background: var(--provac-green);
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.hero-text h1 {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+
+.hero-text p {
+  color: rgba(255,255,255,0.88);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin: 0;
+  max-width: 300px;
+}
+
 .selector-main {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px 20px 40px;
-}
-
-.welcome-box {
-  text-align: center;
-  color: white;
-  margin-bottom: 32px;
-}
-
-.welcome-box h1 {
-  font-size: 1.7rem;
-  font-weight: 600;
-  margin: 0 0 6px;
-  letter-spacing: -0.01em;
-}
-
-.welcome-box p {
-  font-size: 0.95rem;
-  opacity: 0.8;
-  margin: 0;
+  padding: 28px 20px 36px;
 }
 
 .band-list {
@@ -133,8 +162,16 @@
 }
 
 @media (max-width: 480px) {
-  .welcome-box h1 {
-    font-size: 1.4rem;
+  .selector-hero {
+    min-height: 260px;
+  }
+
+  .hero-text h1 {
+    font-size: 1.6rem;
+  }
+
+  .hero-text p {
+    max-width: 260px;
   }
 }
 
@@ -158,4 +195,55 @@
 .hist-link-arrow {
   color: #4CAF50;
   font-weight: 700;
+}
+
+.marcas-strip {
+  width: 100%;
+  max-width: 480px;
+  margin-top: auto;
+  padding-top: 32px;
+  text-align: center;
+}
+
+.marcas-label-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.marcas-label-row::before,
+.marcas-label-row::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.22);
+}
+
+.marcas-label {
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.55);
+  white-space: nowrap;
+}
+
+.marcas-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.marca-item {
+  color: white;
+  font-weight: 600;
+  font-size: 0.82rem;
+  opacity: 0.92;
+  letter-spacing: 0.01em;
+}
+
+.marca-item:not(:first-child) {
+  border-left: 1px solid rgba(255,255,255,0.3);
+  padding-left: 16px;
 }

@@ -1,3 +1,4 @@
+import heroImg from '../assets/hero.jpg';
 import './BandSelector.css';
 
 const TIPOS_BANDA = [
@@ -23,25 +24,33 @@ const TIPOS_BANDA = [
   }
 ];
 
+const MARCAS = ['HABASIT', 'INTRALOX', 'YONGLI', 'BELTSERVICE'];
+
 export default function BandSelector({ usuario, onSelect, onLogout, onVerHistorial }) {
   return (
     <div className="selector-container">
-      <nav className="selector-navbar">
-        <div className="nav-left">
-          <img src="/logo-provac.png" alt="PROVAC" className="nav-logo" />
-        </div>
-        <div className="nav-right">
-          <span className="user-info">{usuario.nombre}</span>
-          <button onClick={onLogout} className="logout-btn">Cerrar Sesión</button>
-        </div>
-      </nav>
+      <div className="selector-hero" style={{ backgroundImage: `url(${heroImg})` }}>
+        <nav className="selector-navbar">
+          <div className="nav-left">
+            <img src="/logo-provac.png" alt="PROVAC" className="nav-logo" />
+          </div>
+          <div className="nav-right">
+            <span className="user-info">{usuario.nombre}</span>
+            <button onClick={onLogout} className="logout-btn">Cerrar Sesión</button>
+          </div>
+        </nav>
 
-      <main className="selector-main">
-        <div className="welcome-box">
+        <div className="hero-text">
+          <div className="hero-eyebrow">
+            <span className="hero-eyebrow-bar" />
+            <span>LEVANTAMIENTOS INDUSTRIALES</span>
+          </div>
           <h1>Bienvenido</h1>
           <p>Selecciona el tipo de levantamiento que vas a realizar</p>
         </div>
+      </div>
 
+      <main className="selector-main">
         <button className="hist-link" onClick={onVerHistorial}>
           <span>Mis Levantamientos</span>
           <span className="hist-link-arrow">→</span>
@@ -58,6 +67,17 @@ export default function BandSelector({ usuario, onSelect, onLogout, onVerHistori
               <span className="band-arrow">→</span>
             </button>
           ))}
+        </div>
+
+        <div className="marcas-strip">
+          <div className="marcas-label-row">
+            <span className="marcas-label">MARCAS / TECNOLOGÍAS</span>
+          </div>
+          <div className="marcas-list">
+            {MARCAS.map((marca) => (
+              <span key={marca} className="marca-item">{marca}</span>
+            ))}
+          </div>
         </div>
       </main>
     </div>
