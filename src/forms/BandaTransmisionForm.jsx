@@ -6,6 +6,7 @@ import { TIPOS_BANDA, CAMPOS_CLIENTE } from '../constants/bandas';
 import { enviarOEncolar } from '../utils/offlineSubmit';
 import AnchoBandaHelp from '../components/AnchoBandaHelp';
 import CentroCentroHelp from '../components/CentroCentroHelp';
+import CircuitoCerradoHelp from '../components/CircuitoCerradoHelp';
 
 const TOTAL_PASOS = 11;
 const TITULOS = [
@@ -665,7 +666,7 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
                   <input type="number" value={data.ancho_banda} onChange={e => setField('ancho_banda', e.target.value)} />
                 </div>
                 <div className="bt-field">
-                  <label>Largo total / perímetro (mm)</label>
+                  <label>Largo total / perímetro (mm) <CircuitoCerradoHelp /></label>
                   <input type="number" value={data.largo_total_perimetro} onChange={e => setField('largo_total_perimetro', e.target.value)} />
                 </div>
               </div>

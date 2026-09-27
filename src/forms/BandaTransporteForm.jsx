@@ -6,6 +6,7 @@ import { TIPOS_BANDA, CAMPOS_CLIENTE } from '../constants/bandas';
 import { enviarOEncolar } from '../utils/offlineSubmit';
 import AnchoBandaHelp from '../components/AnchoBandaHelp';
 import CentroCentroHelp from '../components/CentroCentroHelp';
+import CircuitoCerradoHelp from '../components/CircuitoCerradoHelp';
 
 const TOTAL_PASOS = 9;
 const TITULOS = [
@@ -657,7 +658,7 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
 
               <h3 className="bt-subtitle">Medidas de Circuito Cerrado</h3>
               <div className="bt-field">
-                <label>Largo total de circuito cerrado (mm)</label>
+                <label>Largo total de circuito cerrado (mm) <CircuitoCerradoHelp /></label>
                 <input type="number" value={data.largo_circuito_cerrado} onChange={e => setField('largo_circuito_cerrado', e.target.value)} />
               </div>
               <div className="bt-field">
