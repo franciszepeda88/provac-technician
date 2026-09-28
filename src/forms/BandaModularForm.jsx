@@ -6,6 +6,7 @@ import { TIPOS_BANDA, CAMPOS_CLIENTE } from '../constants/bandas';
 import { enviarOEncolar } from '../utils/offlineSubmit';
 import AnchoBandaHelp from '../components/AnchoBandaHelp';
 import CentroCentroHelp from '../components/CentroCentroHelp';
+import RadioInteriorHelp from '../components/RadioInteriorHelp';
 
 const TITULOS_RECTA = [
   'Datos del Cliente',
@@ -1014,7 +1015,7 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
                       <input type="number" step="0.01" value={data.curvas[key].long_recta_previa} onChange={e => setCurvaField(key, 'long_recta_previa', e.target.value)} />
                     </div>
                     <div className="bt-field">
-                      <label>Radio interior (mm)</label>
+                      <label>Radio interior (mm) <RadioInteriorHelp /></label>
                       <input type="number" value={data.curvas[key].radio_interior} onChange={e => setCurvaField(key, 'radio_interior', e.target.value)} />
                     </div>
                   </div>
