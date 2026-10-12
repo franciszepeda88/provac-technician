@@ -4,6 +4,7 @@ import SignaturePad from '../components/SignaturePad';
 import './BandaTransporteForm.css';
 import { TIPOS_BANDA, CAMPOS_CLIENTE } from '../constants/bandas';
 import { enviarOEncolar } from '../utils/offlineSubmit';
+import { comprimirImagen } from '../utils/imageUtils';
 import AnchoBandaHelp from '../components/AnchoBandaHelp';
 import CentroCentroHelp from '../components/CentroCentroHelp';
 import CircuitoCerradoHelp from '../components/CircuitoCerradoHelp';
@@ -159,14 +160,22 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
 
   const handlePhotoCapture = (e) => {
     const files = Array.from(e.target.files);
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setData(prev => ({ ...prev, fotos: [...prev.fotos, event.target.result] }));
-      };
-      reader.readAsDataURL(file);
-    });
     e.target.value = '';
+    files.forEach(file => {
+      comprimirImagen(file)
+        .then(dataUrl => {
+          setData(prev => ({ ...prev, fotos: [...prev.fotos, dataUrl] }));
+        })
+        .catch(() => {
+          // Si la compresion falla (formato raro, etc.), se usa la foto
+          // original como respaldo en vez de perderla.
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            setData(prev => ({ ...prev, fotos: [...prev.fotos, event.target.result] }));
+          };
+          reader.readAsDataURL(file);
+        });
+    });
   };
 
   const removePhoto = (idx) => {
