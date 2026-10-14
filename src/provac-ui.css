@@ -38,3 +38,6 @@ h1,h2,h3,.band-name,.hero-text h1{font-family:'Montserrat',system-ui,sans-serif}
 .login-subtitle{color:var(--blue)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media print{body::before,body::after{display:none}}
+.app,.login-container,.login-container *{font-family:'Barlow',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+h1,h2,h3{font-family:'Montserrat',system-ui,sans-serif!important}
+#root{border-inline:1px solid var(--line);background:transparent}
