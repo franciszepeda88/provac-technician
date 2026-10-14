@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(180deg, #0D4C92 0%, #082F5C 100%);
+  background: linear-gradient(180deg, #014ea0 0%, #013670 100%);
   font-family: Arial, sans-serif;
 }
 
@@ -24,7 +24,7 @@
 }
 
 .login-subtitle {
-  color: #0D4C92;
+  color: #014ea0;
   font-weight: 600;
   font-size: 15px;
   margin-bottom: 24px !important;
@@ -52,12 +52,12 @@
 
 .login-box input:focus {
   outline: none;
-  border-color: #0D4C92;
+  border-color: #014ea0;
 }
 
 .login-box button {
   padding: 12px;
-  background-color: #0D4C92;
+  background-color: #014ea0;
   color: white;
   border: none;
   border-radius: 5px;
@@ -68,7 +68,7 @@
 }
 
 .login-box button:hover:not(:disabled) {
-  background-color: #082F5C;
+  background-color: #013670;
 }
 
 .login-box button:disabled {
@@ -86,7 +86,7 @@
 .login-link-recuperar {
   background: none;
   border: none;
-  color: #0D4C92;
+  color: #014ea0;
   font-size: 13px;
   font-weight: 600;
   margin-top: 16px;
@@ -102,7 +102,7 @@
 }
 
 .login-recuperar-mensaje {
-  color: #2E7D32;
+  color: #1f5f1c;
   font-size: 13px;
   margin-top: 14px;
   text-align: center;

@@ -1,0 +1,40 @@
+/* PROVAC UI — línea gráfica común con el PROVAC HUB. Se carga al final; para volver
+   al diseño anterior basta quitar el import en main.jsx. */
+:root{--blue:#014EA0;--blue-dark:#013670;--green:#38A233;--green-tint:#DFEDD4;--blue-tint:#E6EDF6;--ink:#00244A;--muted:#4A5B70;--page:#F2F6FA;--line:#D5DEE9;--ease:cubic-bezier(.2,.7,.2,1)}
+@keyframes pvFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes pvDrift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-18px) scale(1.06)}}
+@keyframes pvDrift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-28px,20px) scale(1.08)}}
+html,body,button,input,select,textarea{font-family:'Barlow',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+body{background:var(--page);color:var(--ink)}
+body::before,body::after{content:"";position:fixed;z-index:0;border-radius:50%;pointer-events:none}
+body::before{top:-140px;right:-100px;width:520px;height:520px;background:radial-gradient(circle,rgba(60,170,54,.20),rgba(60,170,54,0) 68%);animation:pvDrift 14s ease-in-out infinite}
+body::after{top:180px;left:-180px;width:560px;height:560px;background:radial-gradient(circle,rgba(1,78,160,.14),rgba(1,78,160,0) 68%);animation:pvDrift2 18s ease-in-out infinite}
+#root{position:relative;z-index:1}
+h1,h2,h3,.band-name,.hero-text h1{font-family:'Montserrat',system-ui,sans-serif}
+/* barras superiores: claras, con el degradado verde del Hub */
+.selector-navbar,.hist-navbar,.navbar{background:rgba(255,255,255,.9)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:var(--ink)!important;border-bottom:4px solid;border-image:linear-gradient(90deg,var(--green-tint),var(--green)) 1;box-shadow:none}
+.nav-logo,.hist-nav-logo{filter:none!important}
+.selector-navbar .user-info,.navbar .user-info,.hist-user,.nav-left h2{color:var(--ink)!important}
+.logout-btn,.hist-back{background:#fff!important;color:var(--blue)!important;border:1px solid #9FB1C6!important;border-radius:8px!important;transition:transform .2s ease,background .2s ease}
+.logout-btn:hover,.hist-back:hover{background:var(--blue-tint)!important;transform:translateY(-1px)}
+.hist-title-row h1{color:var(--blue)}
+/* tarjetas y botones de lista */
+.band-btn,.hist-card,.form-box,.bt-subtipo-card,.login-box{border-radius:16px;animation:pvFadeUp .55s var(--ease) both;transition:transform .3s var(--ease),box-shadow .3s ease,border-color .3s ease}
+.band-btn,.hist-card{border-left-color:var(--green)}
+@media (hover:hover){.band-btn:hover,.hist-card:hover{transform:translateY(-4px);box-shadow:0 16px 32px -16px rgba(1,78,160,.35)}}
+.band-btn:nth-child(2),.hist-card:nth-child(2){animation-delay:.06s}.band-btn:nth-child(3),.hist-card:nth-child(3){animation-delay:.12s}.band-btn:nth-child(4),.hist-card:nth-child(4){animation-delay:.18s}.band-btn:nth-child(n+5),.hist-card:nth-child(n+5){animation-delay:.22s}
+.band-arrow,.hist-link-arrow{transition:transform .25s ease}.band-btn:hover .band-arrow{transform:translateX(4px)}
+/* campos y botones */
+.form-group input,.form-group textarea,.form-group select,.login-box input,.hist-filtros input,.hist-filtros select{border-radius:8px;border-color:#9FB1C6;transition:border-color .2s ease,box-shadow .2s ease}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus,.login-box input:focus,.hist-filtros input:focus,.hist-filtros select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(1,78,160,.15)}
+.submit-btn,.login-box button,.next-btn,.prev-btn{border-radius:8px;transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+.submit-btn:hover:not(:disabled),.login-box button:hover:not(:disabled),.next-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 22px -10px rgba(1,78,160,.55)}
+.submit-btn{background:linear-gradient(135deg,var(--blue),var(--blue-dark))}
+.tab-btn{transition:color .25s ease,border-color .25s ease}
+.tab-btn.active{border-bottom-color:var(--green)}
+/* login */
+.login-container{background:linear-gradient(150deg,#fff 0%,#EEF5FB 60%,#E3F2DE 100%)!important}
+.login-box{border:1px solid var(--line);border-top:4px solid var(--green);box-shadow:0 22px 44px -26px rgba(1,78,160,.45)}
+.login-subtitle{color:var(--blue)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media print{body::before,body::after{display:none}}

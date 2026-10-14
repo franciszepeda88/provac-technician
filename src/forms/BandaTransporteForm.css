@@ -10,7 +10,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #082F5C;
+  background: #013670;
   padding-left: 16px;
   padding-right: 16px;
   padding-bottom: 12px;
@@ -20,7 +20,7 @@
 }
 
 .bt-guardar-rapido {
-  background: #4CAF50;
+  background: #38a233;
   color: white;
   border: none;
   padding: 8px 14px;
@@ -56,7 +56,7 @@
 .bt-progress-label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #082F5C;
+  color: #013670;
   margin-bottom: 6px;
 }
 
@@ -69,7 +69,7 @@
 
 .bt-progress-fill {
   height: 100%;
-  background: #4CAF50;
+  background: #38a233;
   transition: width 0.25s ease;
 }
 
@@ -88,15 +88,15 @@
   border-radius: 50%;
   border: 1px solid #c9d6ea;
   background: white;
-  color: #082F5C;
+  color: #013670;
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
 }
 
 .bt-step-dot-activo {
-  background: #0D4C92;
-  border-color: #0D4C92;
+  background: #014ea0;
+  border-color: #014ea0;
   color: white;
 }
 
@@ -117,14 +117,14 @@
 }
 
 .bt-step h2 {
-  color: #082F5C;
+  color: #013670;
   font-size: 1.2rem;
   margin: 0 0 14px;
 }
 
 .bt-subtitle {
   font-size: 0.9rem;
-  color: #0D4C92;
+  color: #014ea0;
   margin: 18px 0 10px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -175,7 +175,7 @@
 .bt-field input:focus,
 .bt-field select:focus {
   outline: none;
-  border-color: #0D4C92;
+  border-color: #014ea0;
   background: white;
 }
 
@@ -206,10 +206,10 @@
 .bt-photo-btn {
   width: 100%;
   padding: 30px 16px;
-  border: 2px dashed #0D4C92;
+  border: 2px dashed #014ea0;
   border-radius: 12px;
   background: #eaf1fa;
-  color: #082F5C;
+  color: #013670;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -264,7 +264,7 @@
 
 .bt-resumen-badge {
   background: #E8F5E9;
-  color: #2E7D32;
+  color: #1f5f1c;
   padding: 12px 14px;
   border-radius: 10px;
   font-weight: 600;
@@ -319,7 +319,7 @@
 }
 
 .bt-btn-primary {
-  background: #0D4C92;
+  background: #014ea0;
   color: white;
 }
 
@@ -353,7 +353,7 @@
 }
 
 .bt-nav-next {
-  background: #0D4C92;
+  background: #014ea0;
   color: white;
 }
 
@@ -371,7 +371,7 @@
 
 .bt-alert-success {
   background: #E8F5E9;
-  color: #2E7D32;
+  color: #1f5f1c;
 }
 
 /* Mobile-first: por defecto ya es 1 columna en pantallas chicas via media query */
@@ -430,13 +430,13 @@
 
 .bt-subtipo-card:hover,
 .bt-subtipo-card:active {
-  border-color: #0D4C92;
+  border-color: #014ea0;
   background: #F4F8FC;
 }
 
 .bt-subtipo-card b {
   font-size: 1.05rem;
-  color: #0D4C92;
+  color: #014ea0;
 }
 
 .bt-subtipo-card p {
@@ -451,7 +451,7 @@
 
 .bt-subtipo-tag {
   display: inline-block;
-  background: #0D4C92;
+  background: #014ea0;
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;
@@ -468,7 +468,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #0D4C92;
+  color: #014ea0;
   background: #EAF1FB;
   display: inline-block;
   padding: 3px 10px;
@@ -479,7 +479,7 @@
 /* Enlace a un recurso externo (ej. Belt Finder de Intralox) dentro de un paso */
 .bt-link-externo {
   display: inline-block;
-  background: #0D4C92;
+  background: #014ea0;
   color: #fff;
   font-size: 0.85rem;
   font-weight: 600;
@@ -515,8 +515,8 @@
 .bt-btn-agregar-banda {
   width: 100%;
   background: #F4F8FC;
-  border: 2px dashed #0D4C92;
-  color: #0D4C92;
+  border: 2px dashed #014ea0;
+  color: #014ea0;
   padding: 14px;
   border-radius: 10px;
   font-weight: 700;
@@ -544,8 +544,8 @@
 
 .bt-tipo-btn {
   background: #fff;
-  border: 1px solid #0D4C92;
-  color: #0D4C92;
+  border: 1px solid #014ea0;
+  color: #014ea0;
   padding: 12px 10px;
   border-radius: 8px;
   font-weight: 600;

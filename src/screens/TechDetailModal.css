@@ -28,13 +28,13 @@
 
 .tdm-header h2 {
   margin: 0 0 4px;
-  color: #082F5C;
+  color: #013670;
   font-size: 1.15rem;
 }
 
 .tdm-tipo {
   font-size: 0.82rem;
-  color: #0D4C92;
+  color: #014ea0;
   font-weight: 600;
 }
 
@@ -62,7 +62,7 @@
   font-size: 0.75rem;
 }
 
-.tdm-badge-completo { background: #E8F5E9; color: #2E7D32; }
+.tdm-badge-completo { background: #E8F5E9; color: #1f5f1c; }
 .tdm-badge-borrador { background: #FFF3E0; color: #E65100; }
 .tdm-badge-pendiente { background: #FFF3E0; color: #E65100; }
 
@@ -94,7 +94,7 @@
 }
 
 .tdm-btn-primary {
-  background: #0D4C92;
+  background: #014ea0;
   color: white;
 }
 
@@ -113,7 +113,7 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: #0D4C92;
+  color: #014ea0;
   margin: 0 0 10px;
 }
 

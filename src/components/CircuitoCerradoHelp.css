@@ -5,9 +5,9 @@
   width: 19px;
   height: 19px;
   border-radius: 50%;
-  border: 1.5px solid #0D4C92;
+  border: 1.5px solid #014ea0;
   background: white;
-  color: #0D4C92;
+  color: #014ea0;
   font-size: 0.7rem;
   font-weight: 700;
   cursor: pointer;
@@ -48,7 +48,7 @@
 
 .lcc-header h3 {
   margin: 0;
-  color: #082F5C;
+  color: #013670;
   font-size: 1.02rem;
   line-height: 1.3;
 }
@@ -65,7 +65,7 @@
 }
 
 .lcc-anim-wrap {
-  background: linear-gradient(180deg, #0D4C92, #082F5C);
+  background: linear-gradient(180deg, #014ea0, #013670);
   border-radius: 10px;
   padding: 10px 8px;
   margin-bottom: 14px;
@@ -78,7 +78,7 @@
 }
 
 .lcc-roller {
-  fill: #082F5C;
+  fill: #013670;
   stroke: white;
   stroke-width: 2;
 }
@@ -98,7 +98,7 @@
 
 .lcc-tape-loop {
   fill: none;
-  stroke: #4CAF50;
+  stroke: #38a233;
   stroke-width: 3.5;
   stroke-linecap: round;
   stroke-dasharray: 40 460;
@@ -119,7 +119,7 @@
 
 .lcc-entendido {
   width: 100%;
-  background: #0D4C92;
+  background: #014ea0;
   color: white;
   border: none;
   border-radius: 8px;

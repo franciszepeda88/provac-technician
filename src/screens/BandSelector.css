@@ -1,7 +1,7 @@
 :root {
-  --provac-blue: #0D4C92;
-  --provac-blue-dark: #082F5C;
-  --provac-green: #4CAF50;
+  --provac-blue: #014ea0;
+  --provac-blue-dark: #013670;
+  --provac-green: #38a233;
 }
 
 .selector-container {
@@ -187,7 +187,7 @@
 }
 
 .hist-link-arrow {
-  color: #4CAF50;
+  color: #38a233;
   font-weight: 700;
 }
 

@@ -10,7 +10,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #082F5C;
+  background: #013670;
   padding-left: 16px;
   padding-right: 16px;
   padding-bottom: 12px;
@@ -60,12 +60,12 @@
 
 .hist-title-row h1 {
   font-size: 1.3rem;
-  color: #082F5C;
+  color: #013670;
   margin: 0;
 }
 
 .hist-export {
-  background: #4CAF50;
+  background: #38a233;
   color: white;
   border: none;
   padding: 9px 14px;
@@ -155,7 +155,7 @@
 }
 
 .hist-retry {
-  background: #0D4C92;
+  background: #014ea0;
   color: white;
   border: none;
   padding: 6px 14px;
@@ -175,7 +175,7 @@
   background: white;
   border-radius: 10px;
   padding: 14px 16px;
-  border-left: 4px solid #4CAF50;
+  border-left: 4px solid #38a233;
   border-top: none;
   border-right: none;
   border-bottom: none;
@@ -195,7 +195,7 @@
 
 .hist-cliente {
   font-weight: 600;
-  color: #082F5C;
+  color: #013670;
   font-size: 0.95rem;
 }
 
@@ -209,7 +209,7 @@
 
 .hist-badge-completo {
   background: #E8F5E9;
-  color: #2E7D32;
+  color: #1f5f1c;
 }
 
 .hist-badge-borrador {
@@ -264,7 +264,7 @@
 .hist-folio-badge {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #0D4C92;
+  color: #014ea0;
   background: #E3F2FD;
   padding: 3px 10px;
   border-radius: 20px;
@@ -272,5 +272,5 @@
 }
 
 .hist-card-sub {
-  border-left-color: #0D4C92;
+  border-left-color: #014ea0;
 }
