@@ -154,7 +154,7 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
     <div className="hist-container">
       <nav className="hist-navbar">
         <img
-          src="/logo-provac.png"
+          src="./logo-provac.png"
           alt="PROVAC"
           className="hist-nav-logo"
           onClick={() => (onIrInicio ? onIrInicio() : onBack())}

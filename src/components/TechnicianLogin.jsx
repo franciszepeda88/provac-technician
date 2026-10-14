@@ -65,7 +65,7 @@ export default function TechnicianLogin({ onLoginSuccess }) {
   return (
     <div className="login-container">
       <div className="login-box">
-        <img src="/logo-provac.png" alt="PROVAC" className="login-logo" />
+        <img src="./logo-provac.png" alt="PROVAC" className="login-logo" />
         <p className="login-subtitle">Levantamiento Técnico de Bandas</p>
 
         {!modoRecuperar ? (

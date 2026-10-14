@@ -1,8 +1,8 @@
-const CACHE_NAME = 'provac-technician-v31';
+const CACHE_NAME = 'provac-technician-v32';
 const STATIC_ASSETS = [
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
+  'manifest.json',
+  'icon-192.png',
+  'icon-512.png'
 ];
 
 self.addEventListener('install', event => {

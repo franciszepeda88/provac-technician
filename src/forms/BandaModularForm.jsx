@@ -440,7 +440,7 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
       <div className="bt-container">
         <nav className="bt-navbar">
           <img
-            src="/logo-provac.png"
+            src="./logo-provac.png"
             alt="PROVAC"
             className="bt-nav-logo"
             onClick={() => (onIrInicio ? onIrInicio() : onBack())}
@@ -475,7 +475,7 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
     <div className="bt-container">
       <nav className="bt-navbar">
         <img
-          src="/logo-provac.png"
+          src="./logo-provac.png"
           alt="PROVAC"
           className="bt-nav-logo"
           onClick={() => (onIrInicio ? onIrInicio() : onBack())}

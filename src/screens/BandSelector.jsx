@@ -31,7 +31,7 @@ export default function BandSelector({ usuario, onSelect, onLogout, onVerHistori
     <div className="selector-container">
       <nav className="selector-navbar">
         <div className="nav-left">
-          <img src="/logo-provac.png" alt="PROVAC" className="nav-logo" />
+          <img src="./logo-provac.png" alt="PROVAC" className="nav-logo" />
         </div>
         <div className="nav-right">
           <span className="user-info">{usuario.nombre}</span>
