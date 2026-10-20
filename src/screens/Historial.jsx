@@ -66,7 +66,7 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
     setError('');
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/levantamientos`, {
+      const response = await fetch(`${API_URL}/levantamientos?mios=1`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!response.ok) throw new Error('Error al cargar');
