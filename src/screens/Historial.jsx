@@ -267,6 +267,12 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
                         <span>{lev.folio}</span>
                       </>
                     )}
+                    {lev.user_id !== usuario.id && (
+                      <>
+                        <span>·</span>
+                        <span>👤 Hecho por {(lev.datos && lev.datos.tecnico_provac) || 'otro técnico'}</span>
+                      </>
+                    )}
                     {cargandoDetalle === lev.id && <span>· Cargando...</span>}
                   </div>
                 </button>
@@ -278,6 +284,9 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
                 <div className="hist-folio-header">
                   <span className="hist-cliente">{primero.cliente_nombre}</span>
                   <span className="hist-folio-badge">{primero.folio} · {grupo.length} bandas</span>
+                  {primero.user_id !== usuario.id && (
+                    <span className="hist-folio-badge">👤 Hecho por {(primero.datos && primero.datos.tecnico_provac) || 'otro técnico'}</span>
+                  )}
                 </div>
                 {grupo.map((lev) => (
                   <button key={lev.id} className="hist-card hist-card-sub" onClick={() => abrirDetalle(lev)} disabled={cargandoDetalle === lev.id}>

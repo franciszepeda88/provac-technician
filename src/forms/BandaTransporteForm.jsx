@@ -40,6 +40,7 @@ const initialData = {
   equipo_tag: '',
   tecnico_provac: '',
   vendedor: '',
+  vendedor_id: '',
   // Paso 2
   industria: '',
   producto_transportador: '',
@@ -101,12 +102,13 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
       return { ...initialData, ...multiBanda.cliente, folio: multiBanda.folio || initialData.folio };
     }
     if (!existente) return initialData;
-    const { cliente_nombre, ubicacion, folio, fotos, firma_tecnico, firma_cliente, datos } = existente;
+    const { cliente_nombre, ubicacion, folio, fotos, firma_tecnico, firma_cliente, datos, vendedor_id } = existente;
     return {
       ...initialData,
       ...datos,
       folio: folio || initialData.folio,
       empresa: cliente_nombre || '',
+      vendedor_id: vendedor_id || initialData.vendedor_id,
       direccion: ubicacion || '',
       fotos: fotos || [],
       firma_tecnico: firma_tecnico || '',
@@ -142,6 +144,19 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [loading, setLoading] = useState(false);
+  const [vendedores, setVendedores] = useState([]);
+
+  // Lista de usuarios para el selector de "Vendedor" (a quien se le asigna el
+  // levantamiento, para que tambien le aparezca en su "Mis Levantamientos").
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    fetch(`${API_URL}/usuarios/lista`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => res.ok ? res.json() : Promise.reject())
+      .then(({ usuarios }) => setVendedores(usuarios || []))
+      .catch(() => {});
+  }, []);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const photoInputRef = useRef(null);
@@ -193,10 +208,11 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
 
   const buildPayload = (estado) => {
     const {
-      empresa, direccion, fotos, firma_tecnico, firma_cliente, folio,
+      empresa, direccion, fotos, firma_tecnico, firma_cliente, folio, vendedor_id,
       ...resto
     } = data;
     return {
+      vendedor_id: vendedor_id || null,
       tipo_banda: 'transporte',
       folio,
       cliente_nombre: empresa,
@@ -481,7 +497,19 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
                 </div>
                 <div className="bt-field">
                   <label>Vendedor</label>
-                  <input placeholder="Nombre del vendedor" value={data.vendedor} onChange={e => setField('vendedor', e.target.value)} />
+                  <select
+                    value={data.vendedor_id}
+                    onChange={e => {
+                      const idSel = e.target.value;
+                      const nombreSel = vendedores.find(v => v.id === idSel)?.nombre || '';
+                      setData(prev => ({ ...prev, vendedor_id: idSel, vendedor: nombreSel }));
+                    }}
+                  >
+                    <option value="">Seleccionar...</option>
+                    {vendedores.map(v => (
+                      <option key={v.id} value={v.id}>{v.nombre}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
