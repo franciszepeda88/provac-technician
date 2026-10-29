@@ -23,5 +23,6 @@ export const CAMPOS_CLIENTE = [
   'area_linea',
   'equipo_tag',
   'tecnico_provac',
-  'vendedor'
+  'vendedor',
+  'vendedor_id'
 ];
