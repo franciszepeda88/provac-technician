@@ -160,6 +160,7 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const photoInputRef = useRef(null);
+  const galeriaInputRef = useRef(null);
 
   const setField = (name, value) => setData(prev => ({ ...prev, [name]: value }));
 
@@ -827,15 +828,28 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
               <h2>Fotos y Videos</h2>
               <p className="bt-hint">Evidencia visual: captura fotos del equipo, empalme, accesorios de la zona de instalación.</p>
 
-              <button type="button" className="bt-photo-btn" onClick={() => photoInputRef.current?.click()}>
-                📷 Toca para agregar fotos
-              </button>
+              <div className="bt-photo-btns">
+                <button type="button" className="bt-photo-btn" onClick={() => photoInputRef.current?.click()}>
+                  📷 Tomar foto
+                </button>
+                <button type="button" className="bt-photo-btn bt-photo-btn-galeria" onClick={() => galeriaInputRef.current?.click()}>
+                  🖼️ Agregar desde galería
+                </button>
+              </div>
               <input
                 ref={photoInputRef}
                 type="file"
                 multiple
                 accept="image/*"
                 capture="environment"
+                onChange={handlePhotoCapture}
+                style={{ display: 'none' }}
+              />
+              <input
+                ref={galeriaInputRef}
+                type="file"
+                multiple
+                accept="image/*"
                 onChange={handlePhotoCapture}
                 style={{ display: 'none' }}
               />

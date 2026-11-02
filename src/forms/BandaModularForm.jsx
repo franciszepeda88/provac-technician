@@ -209,6 +209,7 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const photoInputRef = useRef(null);
+  const galeriaInputRef = useRef(null);
 
   const TITULOS = subtipo === 'radial' ? TITULOS_RADIAL : TITULOS_RECTA;
   const TOTAL_PASOS = TITULOS.length;
@@ -1130,15 +1131,28 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
               <h2>Fotos y Videos</h2>
               <p className="bt-hint">Evidencia visual: equipo, Sprocket, curvas (si aplica), producto.</p>
 
-              <button type="button" className="bt-photo-btn" onClick={() => photoInputRef.current?.click()}>
-                📷 Toca para agregar fotos
-              </button>
+              <div className="bt-photo-btns">
+                <button type="button" className="bt-photo-btn" onClick={() => photoInputRef.current?.click()}>
+                  📷 Tomar foto
+                </button>
+                <button type="button" className="bt-photo-btn bt-photo-btn-galeria" onClick={() => galeriaInputRef.current?.click()}>
+                  🖼️ Agregar desde galería
+                </button>
+              </div>
               <input
                 ref={photoInputRef}
                 type="file"
                 multiple
                 accept="image/*"
                 capture="environment"
+                onChange={handlePhotoCapture}
+                style={{ display: 'none' }}
+              />
+              <input
+                ref={galeriaInputRef}
+                type="file"
+                multiple
+                accept="image/*"
                 onChange={handlePhotoCapture}
                 style={{ display: 'none' }}
               />
