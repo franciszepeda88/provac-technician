@@ -466,7 +466,6 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
           />
           <button className="bt-back" onClick={onBack}>Cambiar tipo</button>
           <span className="bt-user">{usuario.nombre}</span>
-          <button className="bt-logout" onClick={onLogout}>Salir</button>
         </nav>
         <main className="bt-main">
           <div className="bt-box">
@@ -506,7 +505,6 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
           </button>
         )}
         <span className="bt-user">{usuario.nombre}</span>
-        <button className="bt-logout" onClick={onLogout}>Salir</button>
       </nav>
 
       <div className="bt-progress-header">

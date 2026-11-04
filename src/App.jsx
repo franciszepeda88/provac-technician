@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import TechnicianLogin from './components/TechnicianLogin';
+import IrAlHub from './IrAlHub';
+import { tokenVencido, limpiarRedireccion } from './hub';
 import BandSelector from './screens/BandSelector';
 import Historial from './screens/Historial';
 import BandaTransporteForm from './forms/BandaTransporteForm';
@@ -25,7 +26,13 @@ function App() {
     const savedToken = localStorage.getItem('token');
     const savedUsuario = localStorage.getItem('usuario');
 
+    if (savedToken && savedUsuario && tokenVencido(savedToken) && navigator.onLine) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      return;
+    }
     if (savedToken && savedUsuario) {
+      limpiarRedireccion();
       setUsuario(JSON.parse(savedUsuario));
     }
   }, []);
@@ -50,10 +57,6 @@ function App() {
       clearInterval(intervalo);
     };
   }, [usuario]);
-
-  const handleLoginSuccess = (usuarioData) => {
-    setUsuario(usuarioData);
-  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -160,7 +163,7 @@ function App() {
   return (
     <div className="app">
       {!usuario ? (
-        <TechnicianLogin onLoginSuccess={handleLoginSuccess} />
+        <IrAlHub />
       ) : vista === 'historial' ? (
         <Historial
           usuario={usuario}
