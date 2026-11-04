@@ -418,7 +418,6 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
           </button>
         )}
         <span className="bt-user">{usuario.nombre}</span>
-        <button className="bt-logout" onClick={onLogout}>Salir</button>
       </nav>
 
       <div className="bt-progress-header">

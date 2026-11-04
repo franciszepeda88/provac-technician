@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import TechnicianLogin from './components/TechnicianLogin';
+import IrAlHub from './IrAlHub';
+import { tokenVencido, limpiarRedireccion } from './hub';
 import BandSelector from './screens/BandSelector';
 import Historial from './screens/Historial';
 import BandaTransporteForm from './forms/BandaTransporteForm';
@@ -10,7 +11,23 @@ import { sincronizarPendientes } from './utils/offlineQueue';
 import './App.css';
 
 function App() {
-  const [usuario, setUsuario] = useState(null);
+  // La sesión guardada se lee desde el primer render (si no, se redirigiría al Hub por error).
+  // Si el token venció y hay internet, se descarta y se vuelve a pedir al Hub; sin internet se
+  // conserva para poder seguir trabajando sin conexión.
+  const [usuario, setUsuario] = useState(() => {
+    try {
+      const t = localStorage.getItem('token');
+      const u = localStorage.getItem('usuario');
+      if (!t || !u) return null;
+      if (tokenVencido(t) && navigator.onLine) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
+        return null;
+      }
+      limpiarRedireccion();
+      return JSON.parse(u);
+    } catch { return null; }
+  });
   const [vista, setVista] = useState('selector'); // selector | historial | formulario
   const [tipoBanda, setTipoBanda] = useState(null);
   const [editando, setEditando] = useState(null); // levantamiento existente, si se está editando
@@ -21,14 +38,6 @@ function App() {
   // las bandas ya guardadas como borrador que faltan por firmar al final.
   const [multiBanda, setMultiBanda] = useState(null);
 
-  useEffect(() => {
-    const savedToken = localStorage.getItem('token');
-    const savedUsuario = localStorage.getItem('usuario');
-
-    if (savedToken && savedUsuario) {
-      setUsuario(JSON.parse(savedUsuario));
-    }
-  }, []);
 
   // Sincronización de levantamientos guardados sin conexión: se intenta al
   // recuperar señal, y además cada cierto tiempo (por si el navegador no
@@ -50,10 +59,6 @@ function App() {
       clearInterval(intervalo);
     };
   }, [usuario]);
-
-  const handleLoginSuccess = (usuarioData) => {
-    setUsuario(usuarioData);
-  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -160,7 +165,7 @@ function App() {
   return (
     <div className="app">
       {!usuario ? (
-        <TechnicianLogin onLoginSuccess={handleLoginSuccess} />
+        <IrAlHub />
       ) : vista === 'historial' ? (
         <Historial
           usuario={usuario}

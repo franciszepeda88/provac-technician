@@ -163,7 +163,6 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
         />
         <button className="hist-back" onClick={onBack}>Volver</button>
         <span className="hist-user">{usuario.nombre}</span>
-        <button className="hist-logout" onClick={onLogout}>Salir</button>
       </nav>
 
       <main className="hist-main">

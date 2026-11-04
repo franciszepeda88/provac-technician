@@ -35,7 +35,6 @@ export default function BandSelector({ usuario, onSelect, onLogout, onVerHistori
         </div>
         <div className="nav-right">
           <span className="user-info">{usuario.nombre}</span>
-          <button onClick={onLogout} className="logout-btn">Cerrar Sesión</button>
         </div>
       </nav>
 

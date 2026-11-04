@@ -142,7 +142,6 @@ export default function TechnicianForm({ usuario, onLogout }) {
         </div>
         <div className="nav-right">
           <span className="user-info">👤 {usuario.nombre}</span>
-          <button onClick={onLogout} className="logout-btn">Cerrar Sesión</button>
         </div>
       </nav>
 

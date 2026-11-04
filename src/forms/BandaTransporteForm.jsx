@@ -389,7 +389,6 @@ export default function BandaTransporteForm({ usuario, onBack, onLogout, onIrIni
           </button>
         )}
         <span className="bt-user">{usuario.nombre}</span>
-        <button className="bt-logout" onClick={onLogout}>Salir</button>
       </nav>
 
       <div className="bt-progress-header">
