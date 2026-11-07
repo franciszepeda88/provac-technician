@@ -49,10 +49,10 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
       const { subidos, fallidos, restantes } = await sincronizarPendientes(token);
       await cargarPendientes();
       if (subidos > 0) {
-        setMensajeSync(`✅ ${subidos} levantamiento(s) sincronizado(s)`);
+        setMensajeSync(`${subidos} levantamiento(s) sincronizado(s)`);
         cargar(1);
       } else if (fallidos > 0) {
-        setMensajeSync('⚠️ Algunos levantamientos no se pudieron subir todavía');
+        setMensajeSync('Algunos levantamientos no se pudieron subir todavía');
       } else if (restantes === 0) {
         setMensajeSync('');
       }
@@ -177,7 +177,7 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
 
         {pendientes.length > 0 && (
           <div className="hist-pendientes-banner">
-            <span>⏳ {pendientes.length} levantamiento(s) pendiente(s) de sincronizar</span>
+            <span>{pendientes.length} levantamiento(s) pendiente(s) de sincronizar</span>
             <button
               type="button"
               className="hist-btn-sincronizar"
@@ -196,7 +196,7 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
               <button key={lev.id} className="hist-card hist-card-pendiente" onClick={() => setSeleccionado(lev)}>
                 <div className="hist-card-top">
                   <span className="hist-cliente">{lev.cliente_nombre || 'Sin nombre'}</span>
-                  <span className="hist-badge hist-badge-pendiente">⏳ Pendiente</span>
+                  <span className="hist-badge hist-badge-pendiente">Pendiente</span>
                 </div>
                 <div className="hist-card-meta">
                   <span>{TIPO_LABELS[lev.tipo_banda] || lev.tipo_banda}</span>
@@ -269,7 +269,7 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
                     {lev.user_id !== usuario.id && (
                       <>
                         <span>·</span>
-                        <span>👤 Hecho por {(lev.datos && lev.datos.tecnico_provac) || 'otro técnico'}</span>
+                        <span>Hecho por {(lev.datos && lev.datos.tecnico_provac) || 'otro técnico'}</span>
                       </>
                     )}
                     {cargandoDetalle === lev.id && <span>· Cargando...</span>}
@@ -284,7 +284,7 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
                   <span className="hist-cliente">{primero.cliente_nombre}</span>
                   <span className="hist-folio-badge">{primero.folio} · {grupo.length} bandas</span>
                   {primero.user_id !== usuario.id && (
-                    <span className="hist-folio-badge">👤 Hecho por {(primero.datos && primero.datos.tecnico_provac) || 'otro técnico'}</span>
+                    <span className="hist-folio-badge">Hecho por {(primero.datos && primero.datos.tecnico_provac) || 'otro técnico'}</span>
                   )}
                 </div>
                 {grupo.map((lev) => (

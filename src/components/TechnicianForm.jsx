@@ -79,7 +79,7 @@ export default function TechnicianForm({ usuario, onLogout }) {
 
     // Validar campos requeridos
     if (!formData.cliente_nombre || !formData.banda_tipo || !formData.banda_ancho || !formData.banda_largo) {
-      setError('⚠️ Por favor completa todos los campos requeridos');
+      setError('Por favor completa todos los campos requeridos');
       return;
     }
 
@@ -104,7 +104,7 @@ export default function TechnicianForm({ usuario, onLogout }) {
         return;
       }
 
-      setSuccess('✅ Levantamiento guardado exitosamente');
+      setSuccess('Levantamiento guardado exitosamente');
       
       // Resetear formulario
       setFormData({
@@ -129,7 +129,7 @@ export default function TechnicianForm({ usuario, onLogout }) {
 
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError('❌ Error de conexión: ' + err.message);
+      setError('Error de conexión: ' + err.message);
       setLoading(false);
     }
   };
@@ -138,10 +138,10 @@ export default function TechnicianForm({ usuario, onLogout }) {
     <div className="technician-container">
       <nav className="navbar">
         <div className="nav-left">
-          <h2>📋 Levantamiento de Bandas - PROVAC</h2>
+          <h2>Levantamiento de Bandas - PROVAC</h2>
         </div>
         <div className="nav-right">
-          <span className="user-info">👤 {usuario.nombre}</span>
+          <span className="user-info">{usuario.nombre}</span>
         </div>
       </nav>
 
@@ -157,19 +157,19 @@ export default function TechnicianForm({ usuario, onLogout }) {
               className={`tab-btn ${activeTab === 'basico' ? 'active' : ''}`}
               onClick={() => setActiveTab('basico')}
             >
-              📝 Datos Básicos
+              Datos Básicos
             </button>
             <button
               className={`tab-btn ${activeTab === 'fotos' ? 'active' : ''}`}
               onClick={() => setActiveTab('fotos')}
             >
-              📷 Fotos ({formData.fotos.length})
+              Fotos ({formData.fotos.length})
             </button>
             <button
               className={`tab-btn ${activeTab === 'firmas' ? 'active' : ''}`}
               onClick={() => setActiveTab('firmas')}
             >
-              ✍️ Firmas
+              Firmas
             </button>
           </div>
 
@@ -338,7 +338,7 @@ export default function TechnicianForm({ usuario, onLogout }) {
                     className="photo-upload-btn"
                     onClick={() => photoInputRef.current?.click()}
                   >
-                    📷 Agregar Fotos
+                    Agregar Fotos
                   </button>
                   <input
                     ref={photoInputRef}
@@ -369,7 +369,7 @@ export default function TechnicianForm({ usuario, onLogout }) {
 
                 {formData.fotos.length === 0 && (
                   <div className="no-photos">
-                    <p>📷 No hay fotos añadidas. Haz clic en "Agregar Fotos" para empezar.</p>
+                    <p>No hay fotos añadidas. Haz clic en "Agregar Fotos" para empezar.</p>
                   </div>
                 )}
               </div>
@@ -386,7 +386,7 @@ export default function TechnicianForm({ usuario, onLogout }) {
                     onSignatureChange={handleSignatureTecnico}
                   />
                   {formData.firma_tecnico && (
-                    <p className="signature-status">✅ Firma del técnico capturada</p>
+                    <p className="signature-status">Firma del técnico capturada</p>
                   )}
                 </div>
 
@@ -398,7 +398,7 @@ export default function TechnicianForm({ usuario, onLogout }) {
                     onSignatureChange={handleSignatureCliente}
                   />
                   {formData.firma_cliente && (
-                    <p className="signature-status">✅ Firma del cliente capturada</p>
+                    <p className="signature-status">Firma del cliente capturada</p>
                   )}
                 </div>
               </div>
@@ -439,7 +439,7 @@ export default function TechnicianForm({ usuario, onLogout }) {
                 className="submit-btn"
                 disabled={loading}
               >
-                {loading ? '⏳ Guardando...' : '💾 Guardar Levantamiento Completo'}
+                {loading ? 'Guardando...' : 'Guardar Levantamiento Completo'}
               </button>
             </div>
           </form>

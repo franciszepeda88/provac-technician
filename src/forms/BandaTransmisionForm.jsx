@@ -253,7 +253,7 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
   const handleAgregarOtraBanda = async (nuevoTipo) => {
     setError('');
     if (!data.empresa) {
-      setError('⚠️ Falta el nombre de la empresa/cliente (Paso 1)');
+      setError('Falta el nombre de la empresa/cliente (Paso 1)');
       setStep(1);
       return;
     }
@@ -289,7 +289,7 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
         });
       }
     } catch (err) {
-      setError('❌ Error de conexión: ' + err.message);
+      setError('Error de conexión: ' + err.message);
       setLoading(false);
     }
   };
@@ -299,7 +299,7 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
     setSuccess('');
 
     if (!data.empresa) {
-      setError('⚠️ Falta el nombre de la empresa/cliente (Paso 1)');
+      setError('Falta el nombre de la empresa/cliente (Paso 1)');
       setStep(1);
       return;
     }
@@ -325,7 +325,7 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
       }
 
       if (envio.offline) {
-        setSuccess('📴 Sin conexión: guardado en este dispositivo. Se subirá automáticamente al recuperar señal.');
+        setSuccess('Sin conexión: guardado en este dispositivo. Se subirá automáticamente al recuperar señal.');
         setLoading(false);
         if (estado === 'completo' && !esEdicion) {
           if (multiBanda && multiBanda.pendientes && multiBanda.pendientes.length > 0 && onSesionTerminada) {
@@ -373,7 +373,7 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
         }));
       }
 
-      setSuccess(estado === 'completo' ? '✅ Levantamiento guardado' : '💾 Borrador guardado');
+      setSuccess(estado === 'completo' ? 'Levantamiento guardado' : 'Borrador guardado');
       setLoading(false);
 
       if (estado === 'completo' && !esEdicion) {
@@ -388,7 +388,7 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
         }
       }
     } catch (err) {
-      setError('❌ Error de conexión: ' + err.message);
+      setError('Error de conexión: ' + err.message);
       setLoading(false);
     }
   };
@@ -414,7 +414,7 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
         <button className="bt-back" onClick={onBack}>{existente ? "Volver" : "Cambiar tipo"}</button>
         {existente && (
           <button className="bt-guardar-rapido" onClick={() => handleSubmit('completo')} disabled={loading}>
-            {loading ? '⏳ Guardando...' : '💾 Guardar'}
+            {loading ? 'Guardando...' : 'Guardar'}
           </button>
         )}
         <span className="bt-user">{usuario.nombre}</span>
@@ -423,7 +423,7 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
       <div className="bt-progress-header">
         <div className="bt-tipo-banner">Banda de Transmisión de Fuerza</div>
         {multiBanda && (
-          <div className="bt-multibanda-banner">📎 Folio {multiBanda.folio} · {multiBanda.pendientes.length} banda(s) ya guardada(s) en este levantamiento</div>
+          <div className="bt-multibanda-banner">Folio {multiBanda.folio} · {multiBanda.pendientes.length} banda(s) ya guardada(s) en este levantamiento</div>
         )}
         <div className="bt-progress-label">
           Paso {step} de {TOTAL_PASOS} · {TITULOS[step - 1]}
@@ -892,10 +892,10 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
 
               <div className="bt-photo-btns">
                 <button type="button" className="bt-photo-btn" onClick={() => photoInputRef.current?.click()}>
-                  📷 Tomar foto
+                  Tomar foto
                 </button>
                 <button type="button" className="bt-photo-btn bt-photo-btn-galeria" onClick={() => galeriaInputRef.current?.click()}>
-                  🖼️ Agregar desde galería
+                  Agregar desde galería
                 </button>
               </div>
               <input
@@ -974,18 +974,18 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
               <h2>Confirmar Levantamiento</h2>
 
               <div className="bt-resumen-badge">
-                ✅ Levantamiento {data.firma_tecnico ? 'listo para enviar' : 'incompleto'}
+                Levantamiento {data.firma_tecnico ? 'listo para enviar' : 'incompleto'}
               </div>
 
               <h3 className="bt-subtitle">Estado de Secciones</h3>
               <ul className="bt-estado-list">
-                <li className={data.empresa ? 'ok' : 'pend'}>{data.empresa ? '✅' : '⏳'} Datos del Cliente</li>
-                <li className={data.potencia_motor ? 'ok' : 'pend'}>{data.potencia_motor ? '✅' : '⏳'} Aplicación & Condiciones</li>
-                <li className={data.linea_habasit ? 'ok' : 'pend'}>{data.linea_habasit ? '✅' : '⏳'} Especificación de Banda</li>
-                <li className={data.ancho_banda ? 'ok' : 'pend'}>{data.ancho_banda ? '✅' : '⏳'} Dimensiones</li>
-                <li className={data.tipo_empalme ? 'ok' : 'pend'}>{data.tipo_empalme ? '✅' : '⏳'} Empalme</li>
-                <li className={data.fotos.length > 0 ? 'ok' : 'pend'}>{data.fotos.length > 0 ? '✅' : '⏳'} Fotos y Videos ({data.fotos.length})</li>
-                <li className={data.firma_tecnico ? 'ok' : 'pend'}>{data.firma_tecnico ? '✅' : '⏳'} Firmas</li>
+                <li className={data.empresa ? 'ok' : 'pend'}>Datos del Cliente</li>
+                <li className={data.potencia_motor ? 'ok' : 'pend'}>Aplicación & Condiciones</li>
+                <li className={data.linea_habasit ? 'ok' : 'pend'}>Especificación de Banda</li>
+                <li className={data.ancho_banda ? 'ok' : 'pend'}>Dimensiones</li>
+                <li className={data.tipo_empalme ? 'ok' : 'pend'}>Empalme</li>
+                <li className={data.fotos.length > 0 ? 'ok' : 'pend'}>Fotos y Videos ({data.fotos.length})</li>
+                <li className={data.firma_tecnico ? 'ok' : 'pend'}>Firmas</li>
               </ul>
 
               <h3 className="bt-subtitle">Cliente</h3>
@@ -1008,7 +1008,7 @@ export default function BandaTransmisionForm({ usuario, onBack, onLogout, onIrIn
                   Guardar Borrador
                 </button>
                 <button type="button" className="bt-btn-primary" onClick={() => handleSubmit('completo')} disabled={loading}>
-                  {loading ? '⏳ Enviando...' : '✅ Enviar Levantamiento'}
+                  {loading ? 'Enviando...' : 'Enviar Levantamiento'}
                 </button>
               </div>
             </div>

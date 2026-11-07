@@ -27,7 +27,7 @@ export default function TechDetailModal({ levantamiento, onClose, onEditar }) {
         <div className="tdm-meta">
           <span>Folio: <b>{levantamiento.folio && levantamiento.folio !== 'AUTO' ? levantamiento.folio : '—'}</b></span>
           {levantamiento._esPendienteLocal ? (
-            <span>Estado: <b className="tdm-badge tdm-badge-pendiente">⏳ Pendiente de sincronizar</b></span>
+            <span>Estado: <b className="tdm-badge tdm-badge-pendiente">Pendiente de sincronizar</b></span>
           ) : (
             <span>Estado: <b className={`tdm-badge tdm-badge-${levantamiento.estado}`}>{levantamiento.estado}</b></span>
           )}
@@ -36,7 +36,7 @@ export default function TechDetailModal({ levantamiento, onClose, onEditar }) {
 
         {levantamiento._esPendienteLocal && (
           <p className="tdm-hint-pendiente">
-            📴 Este levantamiento todavía no se ha subido al servidor. Se sincronizará solo cuando haya conexión, o puedes forzarlo con "Sincronizar ahora" en la lista.
+            Este levantamiento todavía no se ha subido al servidor. Se sincronizará solo cuando haya conexión, o puedes forzarlo con "Sincronizar ahora" en la lista.
           </p>
         )}
 
