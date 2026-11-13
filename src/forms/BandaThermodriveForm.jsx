@@ -1,10 +1,12 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Fragment } from 'react';
 import { API_URL } from '../config';
 import SignaturePad from '../components/SignaturePad';
 import './BandaTransporteForm.css';
 import { TIPOS_BANDA, CAMPOS_CLIENTE } from '../constants/bandas';
 import { enviarOEncolar } from '../utils/offlineSubmit';
 import { comprimirImagen } from '../utils/imageUtils';
+import { filasBandaAFabricar } from '../utils/resumenBanda';
+import FotoVisor from '../components/FotoVisor';
 import AnchoBandaHelp from '../components/AnchoBandaHelp';
 import CentroCentroHelp from '../components/CentroCentroHelp';
 
@@ -19,8 +21,8 @@ const TITULOS = [
   'Limpieza / Saneamiento',
   'Observaciones',
   'Fotos y Videos',
-  'Firmas y Conformidad',
-  'Confirmar Levantamiento'
+  'Confirmar Levantamiento',
+  'Firmas y Conformidad'
 ];
 
 const initialData = {
@@ -137,6 +139,7 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
 
   const [step, setStep] = useState(() => (multiBanda && !existente ? 2 : 1));
   const [mostrarSelectorBanda, setMostrarSelectorBanda] = useState(false);
+  const [visorFoto, setVisorFoto] = useState(null); // indice de la foto abierta en el visor
   const [data, setData] = useState(construirDataInicial);
 
   // Al abrir un levantamiento NUEVO (no edición), pide de inmediato el folio
@@ -976,7 +979,7 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
               <div className="bt-photos-grid">
                 {data.fotos.map((foto, idx) => (
                   <div key={idx} className="bt-photo-card">
-                    <img src={foto} alt={`Foto ${idx + 1}`} />
+                    <img src={foto} alt={`Foto ${idx + 1}`} className="fv-miniatura" onClick={() => setVisorFoto(idx)} />
                     <button type="button" className="bt-photo-remove" onClick={() => removePhoto(idx)}>✕</button>
                   </div>
                 ))}
@@ -986,6 +989,46 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
           )}
 
           {step === 10 && (
+            <div className="bt-step">
+              <h2>Confirmar Levantamiento</h2>
+
+              <div className="bt-resumen-badge">
+                Revisa este resumen con el cliente antes de pasar a las firmas
+              </div>
+
+              <h3 className="bt-subtitle">Estado de Secciones</h3>
+              <ul className="bt-estado-list">
+                <li className={data.empresa ? 'ok' : 'pend'}>Datos del Cliente</li>
+                <li className={data.tipo_proceso.length > 0 ? 'ok' : 'pend'}>Tipo de Proceso / Equipo</li>
+                <li className={data.estilo ? 'ok' : 'pend'}>Especificación de Banda</li>
+                <li className={data.diametro_ext_sprocket ? 'ok' : 'pend'}>Sprocket / Rueda y Eje</li>
+                <li className={data.descripcion_producto ? 'ok' : 'pend'}>Producto Transportado</li>
+                <li className={data.fotos.length > 0 ? 'ok' : 'pend'}>Fotos y Videos ({data.fotos.length})</li>
+              </ul>
+
+              <h3 className="bt-subtitle">Cliente</h3>
+              <div className="bt-resumen-grid">
+                <span>Empresa:</span><b>{data.empresa || '—'}</b>
+                <span>Contacto:</span><b>{data.contacto || '—'}</b>
+                <span>Fecha:</span><b>{data.fecha || '—'}</b>
+              </div>
+
+              <h3 className="bt-subtitle">Banda a Fabricar</h3>
+              <div className="bt-resumen-grid bt-resumen-banda">
+                {filasBandaAFabricar('thermodrive', data).map(([etiqueta, valor]) => (
+                  <Fragment key={etiqueta}><span>{etiqueta}:</span><b>{valor}</b></Fragment>
+                ))}
+              </div>
+
+              <div className="bt-final-actions">
+                <button type="button" className="bt-btn-secondary" onClick={() => handleSubmit('borrador')} disabled={loading}>
+                  Guardar Borrador
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 11 && (
             <div className="bt-step">
               <h2>Firmas y Conformidad</h2>
               <p className="bt-hint bt-hint-warn">Con mi firma, el cliente confirma haber revisado este levantamiento y acepta que las especificaciones, dimensiones, accesorios y configuración aquí descritos son los que PROVAC utilizará para cotizar y fabricar/suministrar la banda ThermoDrive Intralox.</p>
@@ -1023,42 +1066,6 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
                 <input value={data.cliente_puesto} onChange={e => setField('cliente_puesto', e.target.value)} />
               </div>
               <SignaturePad label="Firma y Sello del Cliente" initialValue={existente ? existente.firma_cliente : ''} onSignatureChange={sig => setField('firma_cliente', sig)} />
-            </div>
-          )}
-
-          {step === 11 && (
-            <div className="bt-step">
-              <h2>Confirmar Levantamiento</h2>
-
-              <div className="bt-resumen-badge">
-                Levantamiento {data.firma_tecnico ? 'listo para enviar' : 'incompleto'}
-              </div>
-
-              <h3 className="bt-subtitle">Estado de Secciones</h3>
-              <ul className="bt-estado-list">
-                <li className={data.empresa ? 'ok' : 'pend'}>Datos del Cliente</li>
-                <li className={data.tipo_proceso.length > 0 ? 'ok' : 'pend'}>Tipo de Proceso / Equipo</li>
-                <li className={data.estilo ? 'ok' : 'pend'}>Especificación de Banda</li>
-                <li className={data.diametro_ext_sprocket ? 'ok' : 'pend'}>Sprocket / Rueda y Eje</li>
-                <li className={data.descripcion_producto ? 'ok' : 'pend'}>Producto Transportado</li>
-                <li className={data.fotos.length > 0 ? 'ok' : 'pend'}>Fotos y Videos ({data.fotos.length})</li>
-                <li className={data.firma_tecnico ? 'ok' : 'pend'}>Firmas</li>
-              </ul>
-
-              <h3 className="bt-subtitle">Cliente</h3>
-              <div className="bt-resumen-grid">
-                <span>Empresa:</span><b>{data.empresa || '—'}</b>
-                <span>Contacto:</span><b>{data.contacto || '—'}</b>
-                <span>Fecha:</span><b>{data.fecha || '—'}</b>
-              </div>
-
-              <h3 className="bt-subtitle">Banda ThermoDrive</h3>
-              <div className="bt-resumen-grid">
-                <span>Ancho:</span><b>{data.ancho_banda ? `${data.ancho_banda} mm` : '—'}</b>
-                <span>Estilo:</span><b>{data.estilo || '—'}</b>
-                <span>Temp. máx. operación:</span><b>{data.temp_max_operacion ? `${data.temp_max_operacion} °C` : '—'}</b>
-              </div>
-
               <div className="bt-final-actions">
                 <button type="button" className="bt-btn-secondary" onClick={() => handleSubmit('borrador')} disabled={loading}>
                   Guardar Borrador
@@ -1070,7 +1077,7 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
             </div>
           )}
 
-          {onAgregarBanda && step >= 2 && step <= (TOTAL_PASOS_FINAL - 1) && (
+          {onAgregarBanda && step === TOTAL_PASOS_FINAL - 1 && (
             <div className="bt-multi-banda">
               {!mostrarSelectorBanda ? (
                 <button type="button" className="bt-btn-agregar-banda" onClick={() => setMostrarSelectorBanda(true)} disabled={loading}>
@@ -1096,10 +1103,14 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
 
           <div className="bt-nav-buttons">
             {step > 1 && <button type="button" className="bt-nav-prev" onClick={prev}>← Atrás</button>}
-            {step < TOTAL_PASOS_FINAL && <button type="button" className="bt-nav-next" onClick={next}>Siguiente →</button>}
+            {step < TOTAL_PASOS_FINAL && <button type="button" className="bt-nav-next" onClick={next}>{step === TOTAL_PASOS_FINAL - 1 ? 'Continuar a Firmas →' : 'Siguiente →'}</button>}
           </div>
         </div>
       </main>
+
+      {visorFoto !== null && (
+        <FotoVisor fotos={data.fotos} indice={visorFoto} onClose={() => setVisorFoto(null)} />
+      )}
     </div>
   );
 }

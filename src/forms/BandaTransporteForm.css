@@ -606,3 +606,15 @@
   font-weight: 600;
   color: #444;
 }
+
+/* Resumen "Banda a Fabricar" del paso Confirmar: recuadro para que el cliente lo revise antes de firmar */
+.bt-resumen-banda {
+  background: #F4F8FC;
+  border: 1px solid #D8E4F2;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.bt-resumen-banda b {
+  word-break: break-word;
+}

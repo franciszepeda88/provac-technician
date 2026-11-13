@@ -1,0 +1,152 @@
+.fv-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  z-index: 1000;
+}
+
+.fv-box {
+  width: 100%;
+  max-width: 960px;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fv-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #fff;
+  flex-wrap: wrap;
+}
+
+.fv-contador {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.fv-controles {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fv-zoom-valor {
+  min-width: 44px;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.fv-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fv-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.fv-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.fv-btn-texto {
+  font-size: 0.8rem;
+}
+
+.fv-btn-cerrar {
+  background: rgba(255, 255, 255, 0.9);
+  color: #013670;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.fv-btn-cerrar:hover:not(:disabled) {
+  background: #fff;
+}
+
+.fv-lienzo {
+  position: relative;
+  height: 72vh;
+  background: #111;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  user-select: none;
+  cursor: zoom-in;
+}
+
+.fv-lienzo-zoom {
+  cursor: grab;
+}
+
+.fv-lienzo-zoom:active {
+  cursor: grabbing;
+}
+
+.fv-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform-origin: center center;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.fv-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 56px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fv-nav:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.fv-nav-prev { left: 8px; }
+.fv-nav-next { right: 8px; }
+
+.fv-ayuda {
+  margin: 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+}
+
+/* Miniaturas que abren el visor */
+.fv-miniatura {
+  cursor: zoom-in;
+}
+
+@media (max-width: 600px) {
+  .fv-lienzo { height: 64vh; }
+  .fv-ayuda { display: none; }
+}

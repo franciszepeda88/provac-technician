@@ -536,6 +536,28 @@ export async function exportDetailToExcel(lev) {
   );
 }
 
+// Secciones del detalle de un levantamiento, ya con etiqueta y valor legibles:
+// [{ title, rows: [[etiqueta, valor], ...] }]. Es la misma información, en el mismo
+// orden, que se imprime en el PDF; la pantalla de detalle la usa para verse igual.
+export function armarSeccionesDetalle(lev) {
+  const datos = lev.datos || {};
+  const usados = new Set();
+  const secciones = seccionesDe(lev.tipo_banda).map(({ title, fields }) => {
+    const rows = fields
+      .filter(k => tieneValor(datos[k]))
+      .map(k => {
+        usados.add(k);
+        return [labelFor(lev.tipo_banda, k), formatValor(datos[k])];
+      });
+    return { title, rows };
+  });
+  const restoRows = Object.entries(datos)
+    .filter(([k, v]) => !usados.has(k) && k !== 'subtipo' && tieneValor(v))
+    .map(([k, v]) => [labelFor(lev.tipo_banda, k), formatValor(v)]);
+  secciones.push({ title: 'Otros Datos', rows: restoRows });
+  return secciones.filter(sec => sec.rows.length > 0);
+}
+
 export function exportDetailToPDF(lev) {
   const doc = new jsPDF();
   let y = 16;
@@ -554,10 +576,7 @@ export function exportDetailToPDF(lev) {
   doc.text(`Fecha: ${lev.created_at ? new Date(lev.created_at).toLocaleDateString('es-HN') : '-'}`, 14, y);
   y += 6;
 
-  const datos = lev.datos || {};
-  const usados = new Set();
   const pageHeight = doc.internal.pageSize.getHeight();
-  const SECTIONS = seccionesDe(lev.tipo_banda);
 
   const dibujarSeccion = (titulo, rows) => {
     if (rows.length === 0) return;
@@ -584,20 +603,7 @@ export function exportDetailToPDF(lev) {
     y = doc.lastAutoTable.finalY + 8;
   };
 
-  SECTIONS.forEach(({ title, fields }) => {
-    const rows = fields
-      .filter(k => tieneValor(datos[k]))
-      .map(k => {
-        usados.add(k);
-        return [labelFor(lev.tipo_banda, k), formatValor(datos[k])];
-      });
-    dibujarSeccion(title, rows);
-  });
-
-  const restoRows = Object.entries(datos)
-    .filter(([k, v]) => !usados.has(k) && k !== 'subtipo' && tieneValor(v))
-    .map(([k, v]) => [labelFor(lev.tipo_banda, k), formatValor(v)]);
-  dibujarSeccion('Otros Datos', restoRows);
+  armarSeccionesDetalle(lev).forEach(({ title, rows }) => dibujarSeccion(title, rows));
 
   if (y > pageHeight - 50) {
     doc.addPage();
