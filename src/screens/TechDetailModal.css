@@ -11,6 +11,9 @@
   padding: var(--sp-4) var(--margen-pagina) calc(var(--sp-8) + env(safe-area-inset-bottom));
   background: var(--color-fondo);
 }
+/* Nada dentro de la ventana se encoge: si el contenido es más largo que la pantalla, la ventana se desplaza.
+   Sin esto, los recuadros (overflow: hidden) se aprietan hasta caber y solo se ve el título de cada sección. */
+.tdm-box > * { flex: none; }
 @media (min-width: 600px) {
   .tdm-overlay { padding: var(--sp-6); }
   .tdm-box { max-width: 720px; height: auto; max-height: 90vh; border-radius: var(--radio-l); box-shadow: var(--sombra-2); padding-bottom: var(--sp-6); }
@@ -36,6 +39,11 @@
   transition: background var(--dur-rapida) var(--curva);
 }
 @media (min-width: 1024px) { .tdm-btn-primary, .tdm-btn-secondary { min-height: var(--alto-control); } }
+/* Teléfono: Editar a todo el ancho; Exportar Excel y Exportar PDF lado a lado, sin partir el texto */
+@media (max-width: 599px) {
+  .tdm-btn-primary { flex-basis: 100%; }
+  .tdm-btn-secondary { flex-basis: calc(50% - var(--sp-2) / 2); padding: 0 var(--sp-2); white-space: nowrap; }
+}
 .tdm-btn-primary { background: var(--color-accion); color: var(--color-texto-inverso); }
 .tdm-btn-primary:hover { background: var(--color-accion-hover); border-color: var(--color-accion-hover); }
 .tdm-btn-secondary { background: var(--color-superficie); color: var(--color-accion); }
