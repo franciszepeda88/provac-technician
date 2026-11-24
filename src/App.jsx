@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import IrAlHub from './IrAlHub';
-import { tokenVencido, limpiarRedireccion } from './hub';
+import { tokenVencido, limpiarRedireccion, renovarSesion, renovarSiHaceFalta, NOMBRE_APP } from './hub';
 import BandSelector from './screens/BandSelector';
 import Historial from './screens/Historial';
 import BandaTransporteForm from './forms/BandaTransporteForm';
@@ -11,22 +11,36 @@ import { sincronizarPendientes } from './utils/offlineQueue';
 
 function App() {
   // La sesión guardada se lee desde el primer render (si no, se redirigiría al Hub por error).
-  // Si el token venció y hay internet, se descarta y se vuelve a pedir al Hub; sin internet se
+  // Si el token venció y hay internet, primero se intenta renovar en silencio (el servidor vuelve a
+  // comprobar el acceso en el Hub); solo si eso falla se descarta y se pide al Hub. Sin internet se
   // conserva para poder seguir trabajando sin conexión.
-  const [usuario, setUsuario] = useState(() => {
+  const [inicio] = useState(() => {
     try {
       const t = localStorage.getItem('token');
       const u = localStorage.getItem('usuario');
-      if (!t || !u) return null;
-      if (tokenVencido(t) && navigator.onLine) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('usuario');
-        return null;
-      }
+      if (!t || !u) return { usuario: null, renovar: false };
+      if (tokenVencido(t) && navigator.onLine) return { usuario: null, renovar: true };
       limpiarRedireccion();
-      return JSON.parse(u);
-    } catch { return null; }
+      return { usuario: JSON.parse(u), renovar: false };
+    } catch { return { usuario: null, renovar: false }; }
   });
+  const [usuario, setUsuario] = useState(inicio.usuario);
+  const [renovando, setRenovando] = useState(inicio.renovar);
+
+  useEffect(() => {
+    if (!inicio.renovar) return;
+    let vigente = true;
+    renovarSesion().then((ok) => {
+      if (!vigente) return;
+      let u = null;
+      if (ok) { try { u = JSON.parse(localStorage.getItem('usuario')); } catch { u = null; } }
+      if (u) limpiarRedireccion();
+      else { localStorage.removeItem('token'); localStorage.removeItem('usuario'); }
+      setUsuario(u);
+      setRenovando(false);
+    });
+    return () => { vigente = false; };
+  }, [inicio.renovar]);
   const [vista, setVista] = useState('selector'); // selector | historial | formulario
   const [tipoBanda, setTipoBanda] = useState(null);
   const [editando, setEditando] = useState(null); // levantamiento existente, si se está editando
@@ -45,7 +59,9 @@ function App() {
   // no depender de que el técnico la abra.
   useEffect(() => {
     if (!usuario) return;
-    const intentarSincronizar = () => {
+    const intentarSincronizar = async () => {
+      // Si la sesión está por vencer (o venció mientras no había señal), se renueva antes de enviar.
+      await renovarSiHaceFalta().catch(() => {});
       const token = localStorage.getItem('token');
       if (!token) return;
       sincronizarPendientes(token).catch(() => {});
@@ -163,7 +179,12 @@ function App() {
 
   return (
     <div className="app">
-      {!usuario ? (
+      {renovando ? (
+        <div className="centro" role="status">
+          <h1>{NOMBRE_APP}</h1>
+          <p>Entrando…</p>
+        </div>
+      ) : !usuario ? (
         <IrAlHub />
       ) : vista === 'historial' ? (
         <Historial
