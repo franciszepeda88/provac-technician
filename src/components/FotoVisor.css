@@ -1,12 +1,12 @@
 .fv-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.82);
+  background: color-mix(in srgb, var(--color-accion-activa) 90%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 12px;
-  z-index: 1000;
+  z-index: var(--z-aviso);
 }
 
 .fv-box {
@@ -23,12 +23,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  color: #fff;
+  color: var(--color-texto-inverso);
   flex-wrap: wrap;
 }
 
 .fv-contador {
-  font-size: 0.85rem;
+  font-size: var(--txt-chico);
   font-weight: 600;
 }
 
@@ -41,24 +41,24 @@
 .fv-zoom-valor {
   min-width: 44px;
   text-align: center;
-  font-size: 0.8rem;
+  font-size: var(--txt-meta);
 }
 
 .fv-btn {
-  min-width: 36px;
-  height: 36px;
+  min-width: var(--area-tactil);
+  height: var(--area-tactil);
   padding: 0 10px;
   border: none;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
-  font-size: 1.15rem;
+  border-radius: var(--radio-m);
+  background: color-mix(in srgb, var(--color-texto-inverso) 16%, transparent);
+  color: var(--color-texto-inverso);
+  font-size: var(--txt-sub);
   line-height: 1;
   cursor: pointer;
 }
 
 .fv-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.3);
+  background: color-mix(in srgb, var(--color-texto-inverso) 30%, transparent);
 }
 
 .fv-btn:disabled {
@@ -67,25 +67,25 @@
 }
 
 .fv-btn-texto {
-  font-size: 0.8rem;
+  font-size: var(--txt-meta);
 }
 
 .fv-btn-cerrar {
-  background: rgba(255, 255, 255, 0.9);
-  color: #013670;
-  font-size: 1rem;
+  background: color-mix(in srgb, var(--color-texto-inverso) 90%, transparent);
+  color: var(--color-accion-hover);
+  font-size: var(--txt-cuerpo);
   font-weight: 700;
 }
 
 .fv-btn-cerrar:hover:not(:disabled) {
-  background: #fff;
+  background: var(--color-superficie);
 }
 
 .fv-lienzo {
   position: relative;
   height: 72vh;
-  background: #111;
-  border-radius: 10px;
+  background: var(--color-accion-activa);
+  border-radius: var(--radio-l);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -116,19 +116,19 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 40px;
+  width: var(--area-tactil);
   height: 56px;
   border: none;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  font-size: 1.8rem;
+  border-radius: var(--radio-m);
+  background: color-mix(in srgb, var(--color-accion-activa) 50%, transparent);
+  color: var(--color-texto-inverso);
+  font-size: var(--txt-seccion);
   line-height: 1;
   cursor: pointer;
 }
 
 .fv-nav:hover {
-  background: rgba(0, 0, 0, 0.75);
+  background: color-mix(in srgb, var(--color-accion-activa) 75%, transparent);
 }
 
 .fv-nav-prev { left: 8px; }
@@ -137,8 +137,8 @@
 .fv-ayuda {
   margin: 0;
   text-align: center;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--color-texto-inverso) 70%, transparent);
+  font-size: var(--txt-meta);
 }
 
 /* Miniaturas que abren el visor */

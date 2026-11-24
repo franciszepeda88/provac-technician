@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import './RadioInteriorHelp.css';
+import Ico from './Ico';
 
 export default function RadioInteriorHelp() {
   const [abierto, setAbierto] = useState(false);
@@ -26,7 +27,7 @@ export default function RadioInteriorHelp() {
           <div className="rih-box" onClick={(e) => e.stopPropagation()}>
             <div className="rih-header">
               <h3>Cómo medir el radio interior</h3>
-              <button type="button" className="rih-close" onClick={cerrar}>✕</button>
+              <button type="button" className="rih-close" onClick={cerrar} aria-label="Cerrar"><Ico nombre="x" size={18} /></button>
             </div>
 
             <div className="rih-anim-wrap">

@@ -9,6 +9,8 @@ import { filasBandaAFabricar } from '../utils/resumenBanda';
 import FotoVisor from '../components/FotoVisor';
 import AnchoBandaHelp from '../components/AnchoBandaHelp';
 import CentroCentroHelp from '../components/CentroCentroHelp';
+import Ico from '../components/Ico';
+import BarraSesion from '../components/BarraSesion';
 
 const TOTAL_PASOS_FINAL = 11;
 const TITULOS = [
@@ -393,22 +395,14 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
 
   return (
     <div className="bt-container">
+      <BarraSesion usuario={usuario} />
       <nav className="bt-navbar">
-        <img
-          src="./logo-provac.png"
-          alt="PROVAC"
-          className="bt-nav-logo"
-          onClick={() => (onIrInicio ? onIrInicio() : onBack())}
-          role="button"
-          tabIndex={0}
-        />
-        <button className="bt-back" onClick={onBack}>{existente ? "Volver" : "Cambiar tipo"}</button>
+        <button className="bt-back" onClick={onBack}><Ico nombre="atras" />{existente ? 'Volver a mis levantamientos' : 'Volver a tipos de banda'}</button>
         {existente && (
           <button className="bt-guardar-rapido" onClick={() => handleSubmit('completo')} disabled={loading}>
             {loading ? 'Guardando...' : 'Guardar'}
           </button>
         )}
-        <span className="bt-user">{usuario.nombre}</span>
       </nav>
 
       <div className="bt-progress-header">
@@ -585,7 +579,7 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Identificar banda en el sitio oficial de Intralox ↗
+                Identificar banda en el sitio oficial de Intralox<Ico nombre="externo" size={16} />
               </a>
 
               <div className="bt-field">
@@ -980,7 +974,7 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
                 {data.fotos.map((foto, idx) => (
                   <div key={idx} className="bt-photo-card">
                     <img src={foto} alt={`Foto ${idx + 1}`} className="fv-miniatura" onClick={() => setVisorFoto(idx)} />
-                    <button type="button" className="bt-photo-remove" onClick={() => removePhoto(idx)}>✕</button>
+                    <button type="button" className="bt-photo-remove" onClick={() => removePhoto(idx)} aria-label="Quitar foto"><Ico nombre="x" size={16} /></button>
                   </div>
                 ))}
               </div>
@@ -1102,8 +1096,8 @@ export default function BandaThermodriveForm({ usuario, onBack, onLogout, onIrIn
           )}
 
           <div className="bt-nav-buttons">
-            {step > 1 && <button type="button" className="bt-nav-prev" onClick={prev}>← Atrás</button>}
-            {step < TOTAL_PASOS_FINAL && <button type="button" className="bt-nav-next" onClick={next}>{step === TOTAL_PASOS_FINAL - 1 ? 'Continuar a Firmas →' : 'Siguiente →'}</button>}
+            {step > 1 && <button type="button" className="bt-nav-prev" onClick={prev}><Ico nombre="atras" />Atrás</button>}
+            {step < TOTAL_PASOS_FINAL && <button type="button" className="bt-nav-next" onClick={next}>{step === TOTAL_PASOS_FINAL - 1 ? 'Continuar a Firmas' : 'Siguiente'}<Ico nombre="siguiente" /></button>}
           </div>
         </div>
       </main>

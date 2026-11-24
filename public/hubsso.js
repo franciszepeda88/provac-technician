@@ -7,8 +7,8 @@
   var at=decodeURIComponent(m[1]);
   history.replaceState(null,'',location.pathname+location.search);
   var ov=document.createElement('div');
-  ov.setAttribute('style','position:fixed;inset:0;z-index:2147483600;background:#fff;color:#014EA0;display:flex;align-items:center;justify-content:center;font:600 16px Montserrat,system-ui,sans-serif');
-  ov.textContent='Entrando desde PROVAC HUB…';var wk=setTimeout(function(){ov.innerHTML='Entrando desde PROVAC HUB…<br><span style="font:500 13px Barlow,system-ui,sans-serif;color:#5a6b7d">El servidor está despertando, puede tardar hasta 1 minuto. No cierres esta pantalla.</span>';ov.style.textAlign='center';ov.style.padding='24px'},6000);
+  ov.setAttribute('style','position:fixed;inset:0;z-index:2147483600;background:var(--color-fondo);color:var(--color-accion);display:flex;align-items:center;justify-content:center;font:600 16px/24px var(--fuente)');
+  ov.textContent='Entrando desde PROVAC HUB…';var wk=setTimeout(function(){ov.innerHTML='Entrando desde PROVAC HUB…<br><span style="font:400 14px/20px var(--fuente);color:var(--color-texto-2)">El servidor está despertando, puede tardar hasta 1 minuto. No cierres esta pantalla.</span>';ov.style.textAlign='center';ov.style.padding='24px'},6000);
   (document.body||document.documentElement).appendChild(ov);
   var ctl=new AbortController(),t=setTimeout(function(){ctl.abort()},60000); /* el servidor gratuito puede tardar en despertar */
   fetch(API+'/auth/hub',{method:'POST',signal:ctl.signal,headers:{'Content-Type':'application/json',Authorization:'Bearer '+at},body:JSON.stringify({app:APP})})
@@ -17,7 +17,7 @@
      clearTimeout(t);clearTimeout(wk);
      if(x.ok&&x.d.token){localStorage.setItem('token',x.d.token);localStorage.setItem('usuario',JSON.stringify(x.d.usuario));location.replace(location.pathname+location.search);return}
      ov.textContent=(x.d&&x.d.error)||'No se pudo entrar desde el Hub';
-     ov.style.color='#9B1C1C';setTimeout(function(){ov.remove()},3500);
+     ov.style.color='var(--color-error)';setTimeout(function(){ov.remove()},3500);
    })
    .catch(function(){clearTimeout(wk);ov.textContent='No se pudo conectar. Inicia sesión normalmente.';setTimeout(function(){ov.remove()},3500)});
 })();

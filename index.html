@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
     
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#014EA0" />
+    <meta name="theme-color" content="#FFFFFF" />
     <meta name="description" content="App para levantamientos técnicos de bandas transportadoras y de transmisión" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
@@ -19,15 +19,15 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="icon-192.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://provac-hub.vercel.app" crossorigin />
+    <link rel="stylesheet" href="https://provac-hub.vercel.app/ds/v1/provac-tokens.css" />
     
     <title>PROVAC - Levantamiento Técnico</title>
   </head>
   <body>
     <script src="storage-ns.js"></script>
     <script src="hubsso.js"></script>
-    <script src="hubback.js"></script>
+    <script src="https://provac-hub.vercel.app/ds/v1/provac-barra.js" data-modulo="Levantamiento de bandas" data-corto="Bandas" defer></script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     

@@ -1,4 +1,8 @@
-const CACHE_NAME = 'provac-technician-v32';
+const CACHE_NAME = 'provac-technician-v33';
+// Variables de diseño, barra PROVAC y tipografía vienen del Hub: se guardan aparte para que la app
+// conserve su aspecto (y la barra) cuando el técnico está sin señal.
+const CACHE_DS = 'provac-ds-v1';
+const ORIGEN_DS = 'https://provac-hub.vercel.app';
 const STATIC_ASSETS = [
   'manifest.json',
   'icon-192.png',
@@ -19,7 +23,7 @@ self.addEventListener('activate', event => {
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
+          if (cacheName !== CACHE_NAME && cacheName !== CACHE_DS) {
             return caches.delete(cacheName);
           }
         })
@@ -37,6 +41,24 @@ self.addEventListener('fetch', event => {
   // cachean, van directo a la red tal cual. Si fallan por falta de
   // conexión, cada formulario decide qué hacer (guardarlas en la cola
   // local de IndexedDB para sincronizar después).
+  // Archivos del sistema de diseño (Hub): se sirve la copia guardada y se actualiza en segundo plano.
+  if (request.method === 'GET' && url.origin === ORIGEN_DS && url.pathname.startsWith('/ds/')) {
+    event.respondWith(
+      caches.open(CACHE_DS).then(cache =>
+        cache.match(request).then(guardada => {
+          const red = fetch(request)
+            .then(response => {
+              if (response && (response.status === 200 || response.type === 'opaque')) cache.put(request, response.clone());
+              return response;
+            })
+            .catch(() => guardada);
+          return guardada || red;
+        })
+      )
+    );
+    return;
+  }
+
   const esMismoOrigen = url.origin === self.location.origin;
   if (!esMismoOrigen || request.method !== 'GET') {
     event.respondWith(fetch(request));
