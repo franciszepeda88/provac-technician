@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import './FotoVisor.css';
+import Ico from './Ico';
 
 const ZOOM_MIN = 1;
 const ZOOM_MAX = 5;
@@ -123,7 +124,7 @@ export default function FotoVisor({ fotos, indice, onClose }) {
             <span className="fv-zoom-valor">{Math.round(zoom * 100)}%</span>
             <button type="button" className="fv-btn" onClick={() => cambiarZoom(zoom + 0.5)} disabled={zoom >= ZOOM_MAX} aria-label="Acercar">+</button>
             <button type="button" className="fv-btn fv-btn-texto" onClick={reiniciar} disabled={zoom === 1}>Ajustar</button>
-            <button type="button" className="fv-btn fv-btn-cerrar" onClick={onClose} aria-label="Cerrar">✕</button>
+            <button type="button" className="fv-btn fv-btn-cerrar" onClick={onClose} aria-label="Cerrar"><Ico nombre="x" size={18} /></button>
           </div>
         </div>
 

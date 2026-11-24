@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import './AnchoBandaHelp.css';
+import Ico from './Ico';
 
 export default function AnchoBandaHelp() {
   const [abierto, setAbierto] = useState(false);
@@ -26,7 +27,7 @@ export default function AnchoBandaHelp() {
           <div className="abh-box" onClick={(e) => e.stopPropagation()}>
             <div className="abh-header">
               <h3>Cómo medir el ancho de banda</h3>
-              <button type="button" className="abh-close" onClick={cerrar}>✕</button>
+              <button type="button" className="abh-close" onClick={cerrar} aria-label="Cerrar"><Ico nombre="x" size={18} /></button>
             </div>
 
             <div className="abh-anim-wrap">

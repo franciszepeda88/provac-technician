@@ -8,7 +8,6 @@ import BandaTransmisionForm from './forms/BandaTransmisionForm';
 import BandaModularForm from './forms/BandaModularForm';
 import BandaThermodriveForm from './forms/BandaThermodriveForm';
 import { sincronizarPendientes } from './utils/offlineQueue';
-import './App.css';
 
 function App() {
   // La sesión guardada se lee desde el primer render (si no, se redirigiría al Hub por error).

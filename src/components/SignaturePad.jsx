@@ -1,5 +1,9 @@
 import { useRef, useEffect, useState } from 'react';
 import './SignaturePad.css';
+import Ico from './Ico';
+
+// Colores del lienzo: salen de las variables del sistema de diseño (con respaldo si aún no cargan)
+const color = (nombre, respaldo) => getComputedStyle(document.documentElement).getPropertyValue(nombre).trim() || respaldo;
 
 export default function SignaturePad({ label, initialValue, onSignatureChange }) {
   const canvasRef = useRef(null);
@@ -7,7 +11,7 @@ export default function SignaturePad({ label, initialValue, onSignatureChange })
   const [locked, setLocked] = useState(Boolean(initialValue));
 
   const pintarBlanco = (ctx, canvas) => {
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = color('--color-superficie', 'white');
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   };
 
@@ -17,7 +21,7 @@ export default function SignaturePad({ label, initialValue, onSignatureChange })
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.lineWidth = 2;
-    ctx.strokeStyle = '#333';
+    ctx.strokeStyle = color('--color-texto', 'black');
     pintarBlanco(ctx, canvas);
 
     if (initialValue) {
@@ -85,7 +89,7 @@ export default function SignaturePad({ label, initialValue, onSignatureChange })
     <div className="signature-pad-container">
       <label>{label}</label>
 
-      {locked && <div className="sp-locked-badge">✓ Firma existente guardada</div>}
+      {locked && <div className="sp-locked-badge"><Ico nombre="check" size={16} />Firma existente guardada</div>}
 
       <canvas
         ref={canvasRef}

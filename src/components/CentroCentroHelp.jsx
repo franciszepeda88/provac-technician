@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import './CentroCentroHelp.css';
+import Ico from './Ico';
 
 export default function CentroCentroHelp() {
   const [abierto, setAbierto] = useState(false);
@@ -26,7 +27,7 @@ export default function CentroCentroHelp() {
           <div className="cch-box" onClick={(e) => e.stopPropagation()}>
             <div className="cch-header">
               <h3>Cómo medir la longitud centro a centro</h3>
-              <button type="button" className="cch-close" onClick={cerrar}>✕</button>
+              <button type="button" className="cch-close" onClick={cerrar} aria-label="Cerrar"><Ico nombre="x" size={18} /></button>
             </div>
 
             <div className="cch-anim-wrap">

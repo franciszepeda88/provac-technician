@@ -1,8 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
+import './estilos.css'
 import App from './App.jsx'
-import './provac-ui.css' // al final: tiene prioridad sobre los estilos anteriores
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -7,27 +7,29 @@
 
 .signature-pad-container label {
   font-weight: 600;
-  color: #333;
-  font-size: 0.95rem;
+  color: var(--color-texto);
+  font-size: var(--txt-cuerpo);
 }
 
 .sp-locked-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
   width: fit-content;
-  background: #E8F5E9;
-  color: #1f5f1c;
-  font-size: 0.8rem;
+  background: var(--color-exito-fondo);
+  color: var(--color-exito);
+  font-size: var(--txt-meta);
   font-weight: 600;
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: var(--radio-l);
 }
 
 .signature-canvas {
   touch-action: none;
-  border: 2px solid #ddd;
-  border-radius: 8px;
+  border: 2px solid var(--color-borde);
+  border-radius: var(--radio-m);
   cursor: crosshair;
-  background-color: #fff;
+  background-color: var(--color-superficie);
   display: block;
   width: 100%;
   max-width: 300px;
@@ -35,28 +37,22 @@
 
 .signature-canvas-locked {
   cursor: default;
-  border-color: #38a233;
-  background-color: #fafafa;
+  border-color: var(--color-exito-icono);
+  background-color: var(--color-fondo);
 }
 
 .clear-signature-btn {
-  padding: 8px 12px;
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
   width: fit-content;
+  min-height: var(--area-tactil);
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radio-m);
+  background: var(--color-superficie);
+  color: var(--color-error);
+  font-weight: var(--peso-semi);
+  cursor: pointer;
 }
 
 .clear-signature-btn:hover {
-  background-color: #d32f2f;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
-}
-
-.clear-signature-btn:active {
-  transform: translateY(0);
+  background: var(--color-error-fondo);
 }

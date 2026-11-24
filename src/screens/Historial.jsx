@@ -3,9 +3,16 @@ import { API_URL } from '../config';
 import TechDetailModal from './TechDetailModal';
 import { TIPO_LABELS, exportListToExcel } from '../utils/exportUtils';
 import { listarPendientes, sincronizarPendientes } from '../utils/offlineQueue';
+import Ico from '../components/Ico';
+import BarraSesion from '../components/BarraSesion';
+import Esqueleto from '../components/Esqueleto';
 import './Historial.css';
 
-export default function Historial({ usuario, onBack, onLogout, onEditar, onIrInicio }) {
+// Estado de cada levantamiento, siempre con texto (el color solo acompaña)
+const ETIQUETA_ESTADO = { completo: 'Enviado', borrador: 'Borrador' };
+const etiquetaEstado = (estado) => ETIQUETA_ESTADO[estado || 'completo'] || estado;
+
+export default function Historial({ usuario, onBack, onEditar }) {
   const [levantamientos, setLevantamientos] = useState([]);
   const [busqueda, setBusqueda] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('todos');
@@ -49,10 +56,10 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
       const { subidos, fallidos, restantes } = await sincronizarPendientes(token);
       await cargarPendientes();
       if (subidos > 0) {
-        setMensajeSync(`${subidos} levantamiento(s) sincronizado(s)`);
+        setMensajeSync(`${subidos} levantamiento(s) enviado(s)`);
         cargar(1);
       } else if (fallidos > 0) {
-        setMensajeSync('Algunos levantamientos no se pudieron subir todavía');
+        setMensajeSync('Algunos levantamientos no se pudieron enviar todavía. Se reintentará solo.');
       } else if (restantes === 0) {
         setMensajeSync('');
       }
@@ -152,39 +159,29 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
 
   return (
     <div className="hist-container">
-      <nav className="hist-navbar">
-        <img
-          src="./logo-provac.png"
-          alt="PROVAC"
-          className="hist-nav-logo"
-          onClick={() => (onIrInicio ? onIrInicio() : onBack())}
-          role="button"
-          tabIndex={0}
-        />
-        <button className="hist-back" onClick={onBack}>Volver</button>
-        <span className="hist-user">{usuario.nombre}</span>
-      </nav>
+      <BarraSesion usuario={usuario} />
 
       <main className="hist-main">
+        <button className="atras" onClick={onBack}><Ico nombre="atras" />Volver a tipos de banda</button>
         <div className="hist-title-row">
-          <h1>Mis Levantamientos</h1>
+          <h1>Mis levantamientos</h1>
           {filtrados.length > 0 && (
             <button className="hist-export" onClick={() => exportListToExcel(filtrados, 'mis_levantamientos.xlsx')}>
-              Exportar Excel
+              <Ico nombre="externo" size={16} />Exportar Excel
             </button>
           )}
         </div>
 
         {pendientes.length > 0 && (
           <div className="hist-pendientes-banner">
-            <span>{pendientes.length} levantamiento(s) pendiente(s) de sincronizar</span>
+            <span>{pendientes.length} levantamiento(s) pendiente(s) de enviar</span>
             <button
               type="button"
               className="hist-btn-sincronizar"
               onClick={sincronizar}
               disabled={sincronizando}
             >
-              {sincronizando ? 'Sincronizando...' : 'Sincronizar ahora'}
+              {sincronizando ? 'Enviando…' : 'Enviar ahora'}
             </button>
           </div>
         )}
@@ -196,7 +193,7 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
               <button key={lev.id} className="hist-card hist-card-pendiente" onClick={() => setSeleccionado(lev)}>
                 <div className="hist-card-top">
                   <span className="hist-cliente">{lev.cliente_nombre || 'Sin nombre'}</span>
-                  <span className="hist-badge hist-badge-pendiente">Pendiente</span>
+                  <span className="badge b-pendiente">Pendiente de enviar</span>
                 </div>
                 <div className="hist-card-meta">
                   <span>{TIPO_LABELS[lev.tipo_banda] || lev.tipo_banda}</span>
@@ -217,7 +214,7 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
         <div className="hist-filtros">
           <input
             type="text"
-            placeholder="Buscar cliente, folio o palabra clave..."
+            placeholder="Buscar cliente, folio o palabra clave"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
           />
@@ -229,21 +226,25 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
           </select>
           <select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}>
             <option value="todos">Todos los estados</option>
-            <option value="completo">Completo</option>
+            <option value="completo">Enviado</option>
             <option value="borrador">Borrador</option>
           </select>
         </div>
 
-        {loading && <p className="hist-hint">Cargando...</p>}
+        {loading && <Esqueleto filas={3} />}
         {error && (
-          <div className="hist-error-box">
+          <div className="hist-error-box" role="alert">
             <p className="hist-error">{error}</p>
             <button className="hist-retry" onClick={() => { setLoading(true); cargar(1); }}>Reintentar</button>
           </div>
         )}
 
         {!loading && !error && filtrados.length === 0 && (
-          <p className="hist-hint">No hay levantamientos que coincidan.</p>
+          <div className="vacio">
+            <Ico nombre="bandeja" size={48} />
+            <strong>{levantamientos.length === 0 ? 'Todavía no hay levantamientos' : 'Ningún levantamiento coincide'}</strong>
+            <span>{levantamientos.length === 0 ? 'Los que hagas aparecerán aquí.' : 'Prueba con otra búsqueda o quita los filtros.'}</span>
+          </div>
         )}
 
         <div className="hist-list">
@@ -254,7 +255,7 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
                 <button key={lev.id} className="hist-card" onClick={() => abrirDetalle(lev)} disabled={cargandoDetalle === lev.id}>
                   <div className="hist-card-top">
                     <span className="hist-cliente">{lev.cliente_nombre}</span>
-                    <span className={`hist-badge hist-badge-${lev.estado}`}>{lev.estado || 'completo'}</span>
+                    <span className={`badge b-${lev.estado || 'completo'}`}>{etiquetaEstado(lev.estado)}</span>
                   </div>
                   <div className="hist-card-meta">
                     <span>{TIPO_LABELS[lev.tipo_banda] || lev.tipo_banda}</span>
@@ -272,7 +273,7 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
                         <span>Hecho por {(lev.datos && lev.datos.tecnico_provac) || 'otro técnico'}</span>
                       </>
                     )}
-                    {cargandoDetalle === lev.id && <span>· Cargando...</span>}
+                    {cargandoDetalle === lev.id && <span>· Abriendo…</span>}
                   </div>
                 </button>
               );
@@ -291,11 +292,11 @@ export default function Historial({ usuario, onBack, onLogout, onEditar, onIrIni
                   <button key={lev.id} className="hist-card hist-card-sub" onClick={() => abrirDetalle(lev)} disabled={cargandoDetalle === lev.id}>
                     <div className="hist-card-top">
                       <span className="hist-cliente">{TIPO_LABELS[lev.tipo_banda] || lev.tipo_banda}</span>
-                      <span className={`hist-badge hist-badge-${lev.estado}`}>{lev.estado || 'completo'}</span>
+                      <span className={`badge b-${lev.estado || 'completo'}`}>{etiquetaEstado(lev.estado)}</span>
                     </div>
                     <div className="hist-card-meta">
                       <span>{formatearFecha(lev.created_at)}</span>
-                      {cargandoDetalle === lev.id && <span>· Cargando...</span>}
+                      {cargandoDetalle === lev.id && <span>· Abriendo…</span>}
                     </div>
                   </button>
                 ))}

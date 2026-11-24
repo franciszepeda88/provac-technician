@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import './CircuitoCerradoHelp.css';
+import Ico from './Ico';
 
 export default function CircuitoCerradoHelp() {
   const [abierto, setAbierto] = useState(false);
@@ -26,7 +27,7 @@ export default function CircuitoCerradoHelp() {
           <div className="lcc-box" onClick={(e) => e.stopPropagation()}>
             <div className="lcc-header">
               <h3>Cómo medir el largo total (circuito cerrado)</h3>
-              <button type="button" className="lcc-close" onClick={cerrar}>✕</button>
+              <button type="button" className="lcc-close" onClick={cerrar} aria-label="Cerrar"><Ico nombre="x" size={18} /></button>
             </div>
 
             <div className="lcc-anim-wrap">

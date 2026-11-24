@@ -1,176 +1,56 @@
-/* Pantalla de inicio de Levantamiento de bandas — línea gráfica del PROVAC HUB
-   (fondo blanco/claro, tarjetas con ícono, filo verde, animaciones suaves). */
+/* Pantalla de inicio de Levantamiento de bandas — sistema de diseño PROVAC Hub v1 (solo variables) */
 
-.selector-container {
-  min-height: 100dvh;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: transparent;
-}
-
-.selector-navbar {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 20px;
-  padding-top: max(10px, env(safe-area-inset-top));
-}
-
-.nav-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.nav-logo { height: 52px; width: auto; display: block; }
-.nav-word { font-family: 'Montserrat', system-ui, sans-serif; font-weight: 700; font-size: 22px; letter-spacing: .06em; color: var(--green); }
-.nav-right { display: flex; align-items: center; gap: 12px; }
-.user-info { font-size: .95rem; font-weight: 500; }
+.selector-container { min-height: 100dvh; display: flex; flex-direction: column; background: var(--color-fondo); }
 
 .selector-main {
   width: 100%;
-  max-width: 760px;
+  max-width: var(--ancho-max-form);
   margin: 0 auto;
-  padding: 28px 20px 40px;
+  padding: var(--sp-4) var(--margen-pagina) var(--sp-12);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--sp-4);
 }
 
-/* Tarjeta de bienvenida */
-.sel-hero {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 28px 28px 30px;
-  background: linear-gradient(120deg, #fff 0%, #EEF5FB 55%, #E3F2DE 100%);
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  animation: pvFadeUp .6s var(--ease) both;
-}
-.sel-hero::after {
-  content: "";
-  position: absolute;
-  right: -60px; bottom: -80px;
-  width: 240px; height: 240px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(60,170,54,.22), rgba(60,170,54,0) 68%);
-  animation: pvDrift 14s ease-in-out infinite;
-  pointer-events: none;
-}
-.sel-pill {
-  align-self: flex-start;
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 6px 14px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  font-size: .82rem;
-  color: var(--muted);
-}
-.sel-pill i { width: 9px; height: 9px; border-radius: 50%; background: var(--green); animation: pvPulse 2.2s ease-out infinite; }
-.sel-hero h1 { margin: 0; font-size: 1.9rem; line-height: 1.12; color: var(--blue); letter-spacing: -.01em; }
-.sel-hero p { margin: 0; font-size: 1.05rem; line-height: 1.45; color: var(--muted); max-width: 440px; }
+.sel-enc { display: flex; flex-direction: column; gap: var(--sp-1); }
+.sel-enc h1 { font-size: var(--txt-titulo-m); line-height: var(--lh-titulo-m); font-weight: var(--peso-negrita); letter-spacing: var(--espaciado-titulo); }
+.sel-enc p { font-size: var(--txt-cuerpo); line-height: var(--lh-cuerpo); color: var(--color-texto-2); }
+@media (min-width: 1024px) { .sel-enc h1 { font-size: var(--txt-titulo); line-height: var(--lh-titulo); } }
 
-/* Enlace a historial */
-.hist-link {
-  display: flex; align-items: center; gap: 14px;
+/* Tarjetas que se tocan: Mis levantamientos y tipos de banda */
+.hist-link, .band-btn {
+  display: flex; align-items: center; gap: var(--sp-3);
   width: 100%;
-  background: rgba(230,237,246,.8);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 14px 18px;
-  cursor: pointer;
+  min-height: 72px;
+  padding: var(--relleno-tarjeta);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-l);
+  color: var(--color-texto);
   text-align: left;
-  color: var(--ink);
-  font: inherit;
-  animation: pvFadeUp .6s var(--ease) .05s both;
-  transition: transform .28s var(--ease), box-shadow .28s ease, border-color .28s ease, background .28s ease;
-}
-.hist-link-ico, .band-ico {
-  flex: none;
-  width: 50px; height: 50px;
-  border-radius: 12px;
-  background: var(--blue-tint);
-  display: flex; align-items: center; justify-content: center;
-  transition: background .28s ease, transform .28s ease;
-}
-.hist-link-ico { background: #fff; }
-.hist-link-txt { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.hist-link-txt b { font-family: 'Montserrat', system-ui, sans-serif; font-size: 1rem; font-weight: 600; }
-.hist-link-txt small { font-size: .88rem; color: var(--muted); }
-.hist-link-arrow, .band-arrow { color: var(--blue); font-size: 1.3rem; font-weight: 600; flex: none; transition: transform .25s ease, color .25s ease; }
-
-/* Sección */
-.sel-sec {
-  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 10px;
-  margin-top: 6px;
-}
-.sel-sec h2 { margin: 0; font-size: 1.1rem; font-weight: 600; }
-.sel-sec span { font-size: .9rem; color: var(--muted); }
-
-/* Tarjetas de tipo de banda */
-.band-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-.band-btn {
-  position: relative; overflow: hidden;
-  display: flex; align-items: center; gap: 14px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 18px;
   cursor: pointer;
-  text-align: left;
-  font: inherit;
-  color: var(--ink);
+  transition: border-color var(--dur-rapida) var(--curva), box-shadow var(--dur-rapida) var(--curva);
 }
-.band-btn::before {
-  content: "";
-  position: absolute; left: 0; top: 0; right: 0; height: 4px;
-  background: linear-gradient(90deg, var(--green-tint), var(--green));
-  transform: scaleX(0); transform-origin: left;
-  transition: transform .35s ease;
-}
-.band-txt { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.band-name { font-family: 'Montserrat', system-ui, sans-serif; font-weight: 600; font-size: 1rem; line-height: 1.3; color: var(--ink); }
-.band-desc { font-size: .9rem; line-height: 1.4; color: var(--muted); }
+.hist-link:hover, .band-btn:hover { border-color: var(--color-info-borde); box-shadow: var(--sombra-1); }
+.hist-link:active, .band-btn:active { background: var(--color-accion-suave); }
+.hist-link > .ico, .band-btn > .ico { color: var(--color-accion); }
+.hist-link { background: var(--color-accion-suave); border-color: var(--color-info-borde); }
 
-@media (hover: hover) {
-  .band-btn:hover, .hist-link:hover { border-color: #9FC0E6; box-shadow: 0 18px 36px -14px rgba(1,78,160,.28); transform: translateY(-5px); }
-  .band-btn:hover::before { transform: scaleX(1); }
-  .band-btn:hover .band-ico { background: var(--blue); transform: rotate(-6deg) scale(1.06); }
-  .band-btn:hover .band-ico svg { stroke: #fff; }
-  .band-btn:hover .band-arrow, .hist-link:hover .hist-link-arrow { transform: translateX(5px); color: var(--blue-dark); }
-}
-.band-btn:active, .hist-link:active { transform: scale(.985); }
-.band-ico svg { transition: stroke .28s ease; }
+.caja-ico { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: var(--radio-l); background: var(--color-accion-suave); color: var(--color-accion); }
+.hist-link .caja-ico { background: var(--color-superficie); }
 
-/* Marcas */
-.marcas-strip {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px;
-  padding: 16px 20px;
-  background: rgba(230,237,246,.8);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  margin-top: 6px;
-}
-.marcas-label { font-size: .9rem; font-weight: 600; }
-.marcas-list { display: flex; flex-wrap: wrap; gap: 8px; }
-.marca-item { padding: 6px 14px; background: #fff; border: 1px solid var(--line); border-radius: 20px; font-size: .82rem; font-weight: 500; }
+.hist-link-txt, .band-txt { flex: 1; display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
+.hist-link-txt b, .band-name { font-size: var(--txt-sub); line-height: var(--lh-sub); font-weight: var(--peso-negrita); }
+.hist-link-txt small, .band-desc { font-size: var(--txt-chico); line-height: var(--lh-chico); color: var(--color-texto-2); }
 
-@keyframes pvPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(60,170,54,.45); } 50% { box-shadow: 0 0 0 7px rgba(60,170,54,0); } }
-@media (prefers-reduced-motion: reduce) { .sel-pill i, .sel-hero::after { animation: none; } }
+.sel-sec { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); border-bottom: 1px solid var(--color-divisor); padding-bottom: var(--sp-2); margin-top: var(--sp-2); }
+.sel-sec h2 { font-size: var(--txt-seccion); line-height: var(--lh-seccion); font-weight: var(--peso-negrita); }
+.sel-sec span { font-size: var(--txt-chico); color: var(--color-texto-2); }
 
-@media (max-width: 600px) {
-  .selector-navbar { padding: 8px 12px; }
-  .nav-logo { height: 40px; }
-  .nav-word { font-size: 17px; }
-  .user-info { font-size: .82rem; max-width: 120px; text-align: right; }
-  .selector-main { padding: 18px 14px 32px; }
-  .sel-hero { padding: 22px 20px 24px; }
-  .sel-hero h1 { font-size: 1.55rem; }
-  .band-list { grid-template-columns: 1fr; gap: 12px; }
-}
+.band-list { display: grid; grid-template-columns: 1fr; gap: var(--sp-3); }
+@media (min-width: 600px) { .band-list { grid-template-columns: 1fr 1fr; gap: var(--separacion); } }
+
+.marcas-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3); padding: var(--sp-4); background: var(--color-superficie); border: 1px solid var(--color-borde); border-radius: var(--radio-l); }
+.marcas-label { font-size: var(--txt-chico); font-weight: var(--peso-semi); }
+.marcas-list { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.marca-item { padding: var(--sp-1) var(--sp-3); background: var(--color-fondo); border: 1px solid var(--color-borde); border-radius: var(--radio-full); font-size: var(--txt-meta); line-height: var(--lh-meta); font-weight: var(--peso-medio); color: var(--color-texto-2); }

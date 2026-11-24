@@ -12,11 +12,9 @@ export default function IrAlHub() {
     window.location.replace(HUB_URL + '?next=' + encodeURIComponent(RUTA_EN_HUB))
   }, [])
 
-  const caja = { minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, padding: 24, textAlign: 'center', fontFamily: 'Montserrat, system-ui, sans-serif', color: '#014EA0' }
-  const boton = { background: '#014EA0', color: '#fff', padding: '12px 22px', borderRadius: 8, fontWeight: 600, textDecoration: 'none' }
   return (
-    <div style={caja}>
-      <h1 style={{ margin: 0, fontSize: 22 }}>{NOMBRE_APP}</h1>
+    <div className="centro">
+      <h1>{NOMBRE_APP}</h1>
       {motivo === 'sin_conexion' ? (
         <p>Sin conexión. Para entrar abre primero el PROVAC HUB con internet.</p>
       ) : motivo === 'bucle' ? (
@@ -24,7 +22,7 @@ export default function IrAlHub() {
       ) : (
         <p>Entrando desde el PROVAC HUB…</p>
       )}
-      {motivo && <a style={boton} href={HUB_URL}>Ir al PROVAC HUB</a>}
+      {motivo && <a className="btn" href={HUB_URL}>Ir al Hub</a>}
     </div>
   )
 }

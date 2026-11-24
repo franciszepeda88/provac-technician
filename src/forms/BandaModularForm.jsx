@@ -10,6 +10,8 @@ import FotoVisor from '../components/FotoVisor';
 import AnchoBandaHelp from '../components/AnchoBandaHelp';
 import CentroCentroHelp from '../components/CentroCentroHelp';
 import RadioInteriorHelp from '../components/RadioInteriorHelp';
+import Ico from '../components/Ico';
+import BarraSesion from '../components/BarraSesion';
 
 const TITULOS_RECTA = [
   'Datos del Cliente',
@@ -458,17 +460,9 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
   if (!subtipo) {
     return (
       <div className="bt-container">
+        <BarraSesion usuario={usuario} />
         <nav className="bt-navbar">
-          <img
-            src="./logo-provac.png"
-            alt="PROVAC"
-            className="bt-nav-logo"
-            onClick={() => (onIrInicio ? onIrInicio() : onBack())}
-            role="button"
-            tabIndex={0}
-          />
-          <button className="bt-back" onClick={onBack}>Cambiar tipo</button>
-          <span className="bt-user">{usuario.nombre}</span>
+          <button className="bt-back" onClick={onBack}><Ico nombre="atras" />Volver a tipos de banda</button>
         </nav>
         <main className="bt-main">
           <div className="bt-box">
@@ -492,22 +486,14 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
 
   return (
     <div className="bt-container">
+      <BarraSesion usuario={usuario} />
       <nav className="bt-navbar">
-        <img
-          src="./logo-provac.png"
-          alt="PROVAC"
-          className="bt-nav-logo"
-          onClick={() => (onIrInicio ? onIrInicio() : onBack())}
-          role="button"
-          tabIndex={0}
-        />
-        <button className="bt-back" onClick={onBack}>{existente ? "Volver" : "Cambiar tipo"}</button>
+        <button className="bt-back" onClick={onBack}><Ico nombre="atras" />{existente ? 'Volver a mis levantamientos' : 'Volver a tipos de banda'}</button>
         {existente && (
           <button className="bt-guardar-rapido" onClick={() => handleSubmit('completo')} disabled={loading}>
             {loading ? 'Guardando...' : 'Guardar'}
           </button>
         )}
-        <span className="bt-user">{usuario.nombre}</span>
       </nav>
 
       <div className="bt-progress-header">
@@ -644,7 +630,7 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Identificar banda en el sitio oficial de Intralox ↗
+                Identificar banda en el sitio oficial de Intralox<Ico nombre="externo" size={16} />
               </a>
 
               <div className="bt-field">
@@ -1162,7 +1148,7 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
                 {data.fotos.map((foto, idx) => (
                   <div key={idx} className="bt-photo-card">
                     <img src={foto} alt={`Foto ${idx + 1}`} className="fv-miniatura" onClick={() => setVisorFoto(idx)} />
-                    <button type="button" className="bt-photo-remove" onClick={() => removePhoto(idx)}>✕</button>
+                    <button type="button" className="bt-photo-remove" onClick={() => removePhoto(idx)} aria-label="Quitar foto"><Ico nombre="x" size={16} /></button>
                   </div>
                 ))}
               </div>
@@ -1284,8 +1270,8 @@ export default function BandaModularForm({ usuario, onBack, onLogout, onIrInicio
           )}
 
           <div className="bt-nav-buttons">
-            {step > 1 && <button type="button" className="bt-nav-prev" onClick={prev}>← Atrás</button>}
-            {step < TOTAL_PASOS && <button type="button" className="bt-nav-next" onClick={next}>{step === TOTAL_PASOS - 1 ? 'Continuar a Firmas →' : 'Siguiente →'}</button>}
+            {step > 1 && <button type="button" className="bt-nav-prev" onClick={prev}><Ico nombre="atras" />Atrás</button>}
+            {step < TOTAL_PASOS && <button type="button" className="bt-nav-next" onClick={next}>{step === TOTAL_PASOS - 1 ? 'Continuar a Firmas' : 'Siguiente'}<Ico nombre="siguiente" /></button>}
           </div>
         </div>
       </main>

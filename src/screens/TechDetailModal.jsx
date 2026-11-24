@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { TIPO_LABELS, exportDetailToPDF, exportDetailToExcel, armarSeccionesDetalle } from '../utils/exportUtils';
 import FotoVisor from '../components/FotoVisor';
 import './TechDetailModal.css';
+import Ico from '../components/Ico';
 
 // Detalle de un levantamiento. Se organiza igual que el PDF exportable:
 // encabezado con los datos generales, una tabla en recuadro por cada sección
@@ -17,13 +18,13 @@ export default function TechDetailModal({ levantamiento, onClose, onEditar }) {
 
   return (
     <div className="tdm-overlay" onClick={onClose}>
-      <div className="tdm-box" onClick={(e) => e.stopPropagation()}>
+      <div className="tdm-box" role="dialog" aria-modal="true" aria-label="Detalle del levantamiento" onClick={(e) => e.stopPropagation()}>
         <div className="tdm-header">
           <div>
             <h2>PROVAC · Levantamiento Técnico</h2>
             <span className="tdm-tipo">{TIPO_LABELS[levantamiento.tipo_banda] || levantamiento.tipo_banda}</span>
           </div>
-          <button className="tdm-close" onClick={onClose} aria-label="Cerrar">✕</button>
+          <button className="tdm-close" onClick={onClose} aria-label="Cerrar"><Ico nombre="x" size={18} /></button>
         </div>
 
         <div className="tdm-actions">
@@ -36,7 +37,7 @@ export default function TechDetailModal({ levantamiento, onClose, onEditar }) {
 
         {levantamiento._esPendienteLocal && (
           <p className="tdm-hint-pendiente">
-            Este levantamiento todavía no se ha subido al servidor. Se sincronizará solo cuando haya conexión, o puedes forzarlo con "Sincronizar ahora" en la lista.
+            Este levantamiento está guardado en este teléfono y todavía no se ha enviado. Se enviará solo cuando haya conexión, o puedes usar "Enviar ahora" en la lista.
           </p>
         )}
 
@@ -51,9 +52,9 @@ export default function TechDetailModal({ levantamiento, onClose, onEditar }) {
                 <th>Estado</th>
                 <td>
                   {levantamiento._esPendienteLocal ? (
-                    <b className="tdm-badge tdm-badge-pendiente">Pendiente de sincronizar</b>
+                    <b className="badge b-pendiente">Pendiente de enviar</b>
                   ) : (
-                    <b className={`tdm-badge tdm-badge-${levantamiento.estado}`}>{levantamiento.estado}</b>
+                    <b className={`badge b-${levantamiento.estado || 'completo'}`}>{levantamiento.estado === 'borrador' ? 'Borrador' : 'Enviado'}</b>
                   )}
                 </td>
               </tr>

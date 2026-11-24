@@ -1,0 +1,54 @@
+/* Levantamiento de bandas — base con el sistema de diseño PROVAC Hub v1.
+   Todo color, tamaño y espacio sale de provac-tokens.css (se carga desde el Hub). Aquí no hay #hex. */
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+html, body { margin: 0; background: var(--color-fondo); color: var(--color-texto); font-family: var(--fuente); font-size: var(--txt-cuerpo); line-height: var(--lh-cuerpo); -webkit-text-size-adjust: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+input, select, textarea { color-scheme: light; }
+h1, h2, h3, p { margin: 0; }
+#root, .app { width: 100%; min-height: 100vh; }
+.ico { flex: none; display: block; }
+:where(button, a, input, select, textarea, [tabindex]):focus-visible { outline: none; box-shadow: var(--anillo-foco); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* Quién entró (el nombre de la app lo pone la Barra PROVAC; cerrar sesión solo se hace en el Hub) */
+.sesion { display: flex; align-items: center; justify-content: flex-end; max-width: var(--ancho-max-form); margin: 0 auto; padding: var(--sp-2) var(--margen-pagina) 0; }
+.quien { text-align: right; min-width: 0; }
+.quien .nom { font-weight: var(--peso-semi); font-size: var(--txt-chico); line-height: var(--lh-chico); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.quien .rol { font-size: var(--txt-meta); line-height: var(--lh-meta); color: var(--color-texto-2); }
+
+/* Volver */
+.atras { display: inline-flex; align-items: center; gap: var(--sp-1); align-self: flex-start; min-height: var(--area-tactil); margin-left: calc(var(--sp-2) * -1); padding: 0 var(--sp-2); border: 0; border-radius: var(--radio-m); background: none; color: var(--color-accion); font-weight: var(--peso-semi); cursor: pointer; }
+.atras:hover { background: var(--color-accion-suave); }
+
+/* Estado de cada levantamiento: siempre con texto (guardado en el teléfono / pendiente de enviar / enviado) */
+.badge { display: inline-flex; align-items: center; padding: 2px var(--sp-2); border: 1px solid transparent; border-radius: var(--radio-s); font-size: var(--txt-meta); line-height: var(--lh-meta); font-weight: var(--peso-semi); white-space: nowrap; }
+.b-completo { background: var(--color-reg-enviado-fondo); border-color: var(--color-exito-borde); color: var(--color-reg-enviado); }
+.b-borrador { background: var(--color-reg-guardado-fondo); border-color: var(--color-borde); color: var(--color-reg-guardado); }
+.b-pendiente { background: var(--color-reg-pendiente-fondo); border-color: var(--color-aviso-borde); color: var(--color-reg-pendiente); }
+
+/* Vacío */
+.vacio { display: grid; justify-items: center; gap: var(--sp-2); padding: var(--sp-8) var(--sp-4); text-align: center; color: var(--color-texto-2); background: var(--color-superficie); border: 1px dashed var(--color-borde); border-radius: var(--radio-l); }
+.vacio .ico { color: var(--color-texto-3); }
+.vacio strong { color: var(--color-texto); font-size: var(--txt-sub); line-height: var(--lh-sub); }
+
+/* Carga con esqueleto */
+.esq-lista { display: flex; flex-direction: column; gap: var(--sp-3); }
+.esq { display: block; border-radius: var(--radio-m); background: var(--color-esqueleto); background-image: linear-gradient(90deg, var(--color-esqueleto), var(--color-esqueleto-brillo), var(--color-esqueleto)); background-size: 200% 100%; animation: brillo 1.4s linear infinite; }
+@keyframes brillo { from { background-position: 100% 0; } to { background-position: 0 0; } }
+.esq-tarjeta { height: 84px; border-radius: var(--radio-l); }
+
+/* Pantalla de entrada (sin sesión: se manda al Hub) */
+.centro { display: flex; flex-direction: column; align-items: center; gap: var(--sp-3); max-width: 420px; margin: 0 auto; padding: var(--sp-16) var(--margen-pagina); text-align: center; }
+.centro h1 { font-size: var(--txt-titulo-m); line-height: var(--lh-titulo-m); font-weight: var(--peso-negrita); }
+.centro p { color: var(--color-texto-2); }
+.centro .btn { display: inline-flex; align-items: center; justify-content: center; min-height: var(--alto-control-t); padding: 0 var(--sp-5); border-radius: var(--radio-m); background: var(--color-accion); color: var(--color-texto-inverso); font-weight: var(--peso-semi); text-decoration: none; }
+.centro .btn:hover { background: var(--color-accion-hover); }
+
+/* Ayudas ilustradas (el "?" junto a una medida) y sus ventanas */
+.abh-trigger, .cch-trigger, .rih-trigger, .lcc-trigger { position: relative; width: 24px; height: 24px; font-size: var(--txt-meta); }
+.abh-trigger::after, .cch-trigger::after, .rih-trigger::after, .lcc-trigger::after { content: ""; position: absolute; inset: -10px; }
+.abh-close, .cch-close, .rih-close, .lcc-close { display: grid; place-items: center; width: var(--area-tactil); height: var(--area-tactil); margin: calc(var(--sp-2) * -1) calc(var(--sp-2) * -1) 0 0; border-radius: var(--radio-m); color: var(--color-texto-2); }
+.abh-close:hover, .cch-close:hover, .rih-close:hover, .lcc-close:hover { background: var(--color-accion-suave); color: var(--color-accion); }
+.abh-entendido, .cch-entendido, .rih-entendido, .lcc-entendido { min-height: var(--alto-control-t); }
