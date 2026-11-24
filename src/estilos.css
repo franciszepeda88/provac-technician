@@ -13,7 +13,7 @@ h1, h2, h3, p { margin: 0; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
 /* Quién entró (el nombre de la app lo pone la Barra PROVAC; cerrar sesión solo se hace en el Hub) */
-.sesion { display: flex; align-items: center; justify-content: flex-end; max-width: var(--ancho-max-form); margin: 0 auto; padding: var(--sp-2) var(--margen-pagina) 0; }
+.sesion { display: flex; width: 100%; align-items: center; justify-content: flex-end; max-width: var(--ancho-max-tabla); margin: 0 auto; padding: var(--sp-2) var(--margen-pagina) 0; }
 .quien { text-align: right; min-width: 0; }
 .quien .nom { font-weight: var(--peso-semi); font-size: var(--txt-chico); line-height: var(--lh-chico); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .quien .rol { font-size: var(--txt-meta); line-height: var(--lh-meta); color: var(--color-texto-2); }
